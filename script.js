@@ -27,8 +27,10 @@ const keys = {
 const touchControls = {
     isLeftPressed: false,
     isRightPressed: false,
-    touchStartX: null, // タッチ開始位置
+    touchStartX: null,
 };
+
+let touchStartY = null; // タッチ開始時のY座標を記録 (ジャンプ用)
 
 // キーボードイベントリスナー
 document.addEventListener('keydown', (e) => {
@@ -43,22 +45,22 @@ document.addEventListener('keyup', (e) => {
     keys[e.code] = false;
 });
 
-// タッチイベントリスナー
+// タッチイベントリスナー (横移動用)
 game.addEventListener('touchstart', (e) => {
     e.preventDefault();
     const touch = e.touches[0];
     touchControls.touchStartX = touch.clientX;
-    // 横移動のタッチ操作と区別するため、簡単な判定を追加
-    
-    if (!isJumping) {
-         isJumping = true;
-         velocityY = -20;
-    }
 
+    // ジャンプ処理 (タッチ開始時)
+    touchStartY = touch.clientY;
+    if (!isJumping) {
+        isJumping = true;
+        velocityY = -20;
+    }
 });
 
 game.addEventListener('touchmove', (e) => {
-  e.preventDefault();
+    e.preventDefault();
     if (touchControls.touchStartX !== null) {
         const touch = e.touches[0];
         const deltaX = touch.clientX - touchControls.touchStartX;
@@ -74,13 +76,22 @@ game.addEventListener('touchmove', (e) => {
           touchControls.isRightPressed = false;
         }
     }
+    // スワイプ判定 (ジャンプ抑制)
+    if (touchStartY !== null) {
+        const touch = e.touches[0];
+        const deltaY = touch.clientY - touchStartY;
+        if (Math.abs(deltaY) > 50) { // Y方向の移動量が50px以上ならスワイプとみなす
+            touchStartY = null; // スワイプと判断してジャンプさせない
+        }
+    }
 });
 
 game.addEventListener('touchend', (e) => {
-  e.preventDefault();
+    e.preventDefault();
     touchControls.isLeftPressed = false;
     touchControls.isRightPressed = false;
     touchControls.touchStartX = null;
+    touchStartY = null; // タッチ終了でリセット (ジャンプ用)
 });
 
 function checkCollision(rect1, rect2) {
@@ -163,7 +174,6 @@ function gameLoop() {
         }
     }
 
-    // キーボードとタッチ操作の両方に対応
     let playerMoved = false;
     if (keys.ArrowRight || touchControls.isRightPressed) {
         playerPosition.left += playerSpeed;
