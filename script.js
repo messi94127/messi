@@ -49,12 +49,12 @@ game.addEventListener('touchstart', (e) => {
     const touch = e.touches[0];
     touchControls.touchStartX = touch.clientX;
     // 横移動のタッチ操作と区別するため、簡単な判定を追加
-    if (touchControls.touchStartX === null) { // 横移動操作中でなければジャンプ
-        if (!isJumping) {
-            isJumping = true;
-            velocityY = -20;
-        }
+    
+    if (!isJumping) {
+         isJumping = true;
+         velocityY = -20;
     }
+
 });
 
 game.addEventListener('touchmove', (e) => {
