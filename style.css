@@ -1,52 +1,71 @@
 body {
-  margin: 0;
-  overflow: hidden;
-  background: url('goku.jpg') ;
-  #background-color: #87CEEB; /* 空の青色 */
+    margin: 0;
+    overflow: hidden;
+    background-color: skyblue; /* 背景色を設定 */
 }
 
 #game {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+#background {
+    position: absolute;
+    width: 200vw; /* 背景を長く */
+    height: 100vh;
+    background-image: url('goku.jpg');
+    background-size: cover;
+    background-repeat: repeat-x;
 }
 
 #player {
-  position: absolute;
-  width: 50px;
-  height: 1000px;
-  background: url('goku2.jpg') ;
-  background-size: cover;
-  background-position: 50% 10%;
-  #background-color: red; /* プレイヤーの色 */
-  bottom: 100px; /* 地面からの距離 */
-  left: 50px; /* 左からの距離 */
+    position: absolute;
+    width: 50px;
+    height: 100px;
+    background-image: url('goku2.jpg');
+    background-size: cover;
+    background-position: center bottom;
+    bottom: 100px;
+    left: 50px;
 }
 
-#enemy {
-  position: absolute;
-  width: 50px;
-  height: 50px;
-  background-color: green; /* 敵キャラの色 */
-  bottom: 100px; /* 地面からの距離 */
-  left: 300px; /* 左からの距離（プレイヤーから十分離す） */
+.enemy {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-color: green;
+    bottom: 100px;
+}
+#enemy-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
 }
 
 #goal {
-  position: absolute;
-  width: 50px;
-  height: 50px;
-  background-color: yellow; /* ゴールの色 */
-  bottom: 100px; /* 地面からの距離 */
-  left: 800px; /* 左からの距離（敵キャラから十分離す） */
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-color: yellow;
+    bottom: 100px;
+    /* ゴールの位置を調整。viewport widthに依存しない固定値に */
+    left: 2800px; /* 例えば、ゲーム画面のかなり右端 */
 }
 
-
 #ground {
-  position: absolute;
-  width: 100%;
-  height: 100px;
-  background-color: #654321; /* 地面の茶色 */
-  bottom: 0;
+    position: absolute;
+    width: 100%;
+    height: 100px;
+    background-color: #654321;
+    bottom: 0;
+}
+
+#score {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 20px;
+    color: white;
 }
