@@ -30,36 +30,26 @@ const touchControls = {
     touchStartX: null,
 };
 
-let touchStartY = null; // タッチ開始時のY座標を記録 (ジャンプ用)
+let touchStartY = null;
 
-// キーボードイベントリスナー
-document.addEventListener('keydown', (e) => {
-    if (e.code === 'Space' && !isJumping) {
-        isJumping = true;
-        velocityY = -20;
-    }
-    keys[e.code] = true;
-});
+// イベントリスナーの追加方法を変更 (touchstart、touchmove、touchendをgame要素に直接追加)
+game.addEventListener('touchstart', handleTouchStart, { passive: false });
+game.addEventListener('touchmove', handleTouchMove, { passive: false });
+game.addEventListener('touchend', handleTouchEnd, { passive: false });
 
-document.addEventListener('keyup', (e) => {
-    keys[e.code] = false;
-});
-
-// タッチイベントリスナー (横移動用)
-game.addEventListener('touchstart', (e) => {
+function handleTouchStart(e) {
     e.preventDefault();
     const touch = e.touches[0];
     touchControls.touchStartX = touch.clientX;
-
-    // ジャンプ処理 (タッチ開始時)
     touchStartY = touch.clientY;
+
     if (!isJumping) {
         isJumping = true;
         velocityY = -20;
     }
-});
+}
 
-game.addEventListener('touchmove', (e) => {
+function handleTouchMove(e) {
     e.preventDefault();
     if (touchControls.touchStartX !== null) {
         const touch = e.touches[0];
@@ -72,26 +62,39 @@ game.addEventListener('touchmove', (e) => {
             touchControls.isLeftPressed = true;
             touchControls.isRightPressed = false;
         } else {
-          touchControls.isLeftPressed = false;
-          touchControls.isRightPressed = false;
+            touchControls.isLeftPressed = false;
+            touchControls.isRightPressed = false;
         }
     }
-    // スワイプ判定 (ジャンプ抑制)
+
     if (touchStartY !== null) {
         const touch = e.touches[0];
         const deltaY = touch.clientY - touchStartY;
-        if (Math.abs(deltaY) > 50) { // Y方向の移動量が50px以上ならスワイプとみなす
-            touchStartY = null; // スワイプと判断してジャンプさせない
+        if (Math.abs(deltaY) > 50) {
+            touchStartY = null;
         }
     }
-});
+}
 
-game.addEventListener('touchend', (e) => {
+function handleTouchEnd(e) {
     e.preventDefault();
     touchControls.isLeftPressed = false;
     touchControls.isRightPressed = false;
     touchControls.touchStartX = null;
-    touchStartY = null; // タッチ終了でリセット (ジャンプ用)
+    touchStartY = null;
+}
+
+// キーボードイベントリスナー
+document.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' && !isJumping) {
+        isJumping = true;
+        velocityY = -20;
+    }
+    keys[e.code] = true;
+});
+
+document.addEventListener('keyup', (e) => {
+    keys[e.code] = false;
 });
 
 function checkCollision(rect1, rect2) {
