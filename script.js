@@ -305,6 +305,24 @@ function gameLoop() {
             playerPosition.bottom = 100;
             isJumping = false;
         }
+        // 空中制御（オプション）
+        const airControl = 0.8;
+        if (keys.ArrowRight || touchControls.isRightPressed) {
+            playerPosition.left += playerSpeed * airControl;
+        }
+        if (keys.ArrowLeft || touchControls.isLeftPressed) {
+            playerPosition.left -= playerSpeed * airControl;
+        }
+    }else { // 接地時のみの処理（ジャンプ中でない場合）
+        let playerMoved = false;
+        if (keys.ArrowRight || touchControls.isRightPressed) {
+            playerPosition.left += playerSpeed;
+            playerMoved = true;
+        }
+        if (keys.ArrowLeft || touchControls.isLeftPressed) {
+            playerPosition.left -= playerSpeed;
+            playerMoved = true;
+        }
     }
 
     let playerMoved = false;
