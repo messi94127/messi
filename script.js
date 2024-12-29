@@ -240,15 +240,35 @@ class FireBreathingEnemy {
     }
 }
 
+class FastEnemy {
+    constructor(x, y) {
+        this.element = document.createElement('div');
+        this.element.classList.add('enemy', 'fast-enemy'); // クラス名を追加
+        this.element.style.position = 'absolute';
+        this.element.style.left = `${x}px`;
+        this.element.style.bottom = `${y}px`;
+        this.x = x;
+        this.y = y;
+        this.speed = playerSpeed * backgroundSpeed * 2; // 通常の2倍の速度
+        enemyContainer.appendChild(this.element);
+    }
+
+    move() {
+        this.x -= this.speed; // 高速で移動
+        this.element.style.left = `${this.x}px`;
+
+        if (this.x < -100) {
+            this.x = game.offsetWidth + Math.random() * 500;
+        }
+    }
+}
+
 
 function createEnemies() {
     for (let i = 0; i < numEnemies; i++) {
         const x = 800 + i * 500;
-        if (Math.random() < 0.5) {
-            // 火を吐く敵を追加
-            enemies.push(new FireBreathingEnemy(x, 100));
-        } else {
-            // 通常の敵を追加
+        const enemyType = Math.random(); // 乱数で敵の種類を決定
+        if (enemyType < 0.33) { // 33%の確率で通常の敵
             const enemy = document.createElement('div');
             enemy.classList.add('enemy');
             enemy.style.position = 'absolute';
@@ -258,6 +278,10 @@ function createEnemies() {
             enemy.y = 100;
             enemyContainer.appendChild(enemy);
             enemies.push({ element: enemy, x: x, y: 100, passed: false });
+        } else if (enemyType < 0.66) { // 33%の確率で火を吐く敵
+            enemies.push(new FireBreathingEnemy(x, 100));
+        } else { // 残りの34%の確率で高速な敵
+            enemies.push(new FastEnemy(x, 100));
         }
     }
 }
@@ -303,11 +327,11 @@ function gameLoop() {
             enemyObj.fireBreath();
         } else if (enemyObj instanceof Fire) {
             if (enemyObj.update()) {
-                // 画面外に出た火の玉を削除
                 enemies.splice(index, 1);
             }
+        } else if (enemyObj instanceof FastEnemy) { // 高速な敵の移動
+            enemyObj.move();
         } else {
-            // 通常の敵
             enemyObj.x -= playerSpeed * backgroundSpeed;
             enemyObj.element.style.left = `${enemyObj.x}px`;
             if (enemyObj.x < -100) {

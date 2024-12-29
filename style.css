@@ -89,3 +89,8 @@ body {
     border-radius: 50%;
     position: absolute;
 }
+.fast-enemy {
+    background-color: blue; /* ÂF‚É‚·‚é */
+    width: 60px;
+    height: 60px;
+}
