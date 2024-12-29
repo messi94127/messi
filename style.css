@@ -17,6 +17,7 @@ body {
     height: 100vh;
     background-image: url('goku.jpg');
     background-size: cover;
+    background-position: 70% 30%;
     background-repeat: repeat-x;
 }
 
