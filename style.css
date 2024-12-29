@@ -90,7 +90,9 @@ body {
     position: absolute;
 }
 .fast-enemy {
-    background-color: blue; /* ê¬êFÇ…Ç∑ÇÈ */
-    width: 60px;
-    height: 60px;
+    background-image: url('bata.jpg');
+    background-size: cover;
+    background-position: center bottom;
+    width: 70px;
+    height: 70px;
 }
