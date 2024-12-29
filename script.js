@@ -306,7 +306,7 @@ function gameLoop() {
             isJumping = false;
         }
         // 空中制御（オプション）
-        const airControl = 0.8;
+        const airControl = 0.1;
         if (keys.ArrowRight || touchControls.isRightPressed) {
             playerPosition.left += playerSpeed * airControl;
         }
