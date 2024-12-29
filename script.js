@@ -128,28 +128,33 @@ function handleGameOver() {
 }
 
 function handleGameClear() { // ゴール時の処理
-    // ... ゴール処理
     if (score > highScore) {
         highScore = score;
         localStorage.setItem('highScore', highScore);
         updateHighScoreDisplay();
     }
+
 }
 
 updateHighScoreDisplay(); // ページ読み込み時に表示
 
 function resetGame() {
+    // プレイヤーの初期位置をリセット
     playerPosition = { left: 50, bottom: 100 };
     isJumping = false;
     velocityY = 0;
+
+    startTime = Date.now();
     score = 0;
     scoreDisplay.textContent = `Score: ${score}`;
-    startTime = Date.now();
 
-    enemies.forEach(enemyObj => enemyContainer.removeChild(enemyObj.element));
+    // 敵と火の玉をリセット
+    enemies.forEach(enemyObj => enemyObj.element.remove());
     enemies = [];
     createEnemies();
     updatePositions();
+
+    // キー状態をリセット
     for (const key in keys) {
         keys[key] = false;
     }
@@ -157,8 +162,6 @@ function resetGame() {
     touchControls.isRightPressed = false;
     touchControls.touchStartX = null;
     touchStartY = null;
-    console.log("Game reset. Player position:", playerPosition, "Keys:", keys, "Touch Controls:", touchControls); // 詳細なコンソールログ
-
 }
 
 function updatePositions() {
@@ -176,19 +179,86 @@ function moveBackground() {
         backgroundPosition += background.offsetWidth / 2;
     }
 }
+class Fire {
+    constructor(x, y, direction) {
+        this.element = document.createElement('div');
+        this.element.classList.add('fire');
+        this.element.style.position = 'absolute';
+        this.element.style.left = `${x}px`;
+        this.element.style.bottom = `${y}px`;
+        this.x = x;
+        this.y = y;
+        this.speed = 5;
+        this.direction = direction; // -1: 左方向、1: 右方向
+        enemyContainer.appendChild(this.element);
+    }
+
+    update() {
+        this.x += this.speed * this.direction;
+        this.element.style.left = `${this.x}px`;
+
+        // 画面外に出たら削除
+        if (this.x < 0 || this.x > game.offsetWidth) {
+            this.element.remove();
+            return true; // 削除する場合、trueを返す
+        }
+        return false; // 削除しない場合、falseを返す
+    }
+}
+
+class FireBreathingEnemy {
+    constructor(x, y) {
+        this.element = document.createElement('div');
+        this.element.classList.add('enemy', 'fire-breathing-enemy');
+        this.element.style.position = 'absolute';
+        this.element.style.left = `${x}px`;
+        this.element.style.bottom = `${y}px`;
+        this.x = x;
+        this.y = y;
+        this.fireBreathInterval = 2000 + Math.random() * 2000; // ランダムで火を吐く間隔
+        this.lastFireBreathTime = Date.now();
+        enemyContainer.appendChild(this.element);
+    }
+
+    move() {
+        this.x -= playerSpeed * backgroundSpeed;
+        this.element.style.left = `${this.x}px`;
+
+        // 画面外に出たら位置をリセット
+        if (this.x < -100) {
+            this.x = game.offsetWidth + Math.random() * 500;
+        }
+    }
+
+    fireBreath() {
+        if (Date.now() - this.lastFireBreathTime > this.fireBreathInterval) {
+            // 火を生成
+            const fire = new Fire(this.x, this.y + 20, -1);
+            enemies.push(fire); // 火の玉も敵リストに追加
+            this.lastFireBreathTime = Date.now();
+        }
+    }
+}
+
 
 function createEnemies() {
     for (let i = 0; i < numEnemies; i++) {
-        const enemy = document.createElement('div');
-        enemy.classList.add('enemy');
-        enemy.x = 800 + i * 500;
-        enemy.style.left = `${enemy.x}px`;
-        enemyContainer.appendChild(enemy);
-        enemies.push({
-            element: enemy,
-            x: enemy.x,
-            passed: false
-        });
+        const x = 800 + i * 500;
+        if (Math.random() < 0.5) {
+            // 火を吐く敵を追加
+            enemies.push(new FireBreathingEnemy(x, 100));
+        } else {
+            // 通常の敵を追加
+            const enemy = document.createElement('div');
+            enemy.classList.add('enemy');
+            enemy.style.position = 'absolute';
+            enemy.style.left = `${x}px`;
+            enemy.style.bottom = '100px';
+            enemy.x = x;
+            enemy.y = 100;
+            enemyContainer.appendChild(enemy);
+            enemies.push({ element: enemy, x: x, y: 100, passed: false });
+        }
     }
 }
 
@@ -226,6 +296,27 @@ function gameLoop() {
     if (playerMoved) {
         moveBackground();
     }
+    // 敵の移動と火を吐く処理
+    enemies.forEach((enemyObj, index) => {
+        if (enemyObj instanceof FireBreathingEnemy) {
+            enemyObj.move();
+            enemyObj.fireBreath();
+        } else if (enemyObj instanceof Fire) {
+            if (enemyObj.update()) {
+                // 画面外に出た火の玉を削除
+                enemies.splice(index, 1);
+            }
+        } else {
+            // 通常の敵
+            enemyObj.x -= playerSpeed * backgroundSpeed;
+            enemyObj.element.style.left = `${enemyObj.x}px`;
+            if (enemyObj.x < -100) {
+                enemyObj.x = game.offsetWidth + Math.random() * 500;
+                enemyObj.passed = false;
+            }
+        }
+    });
+
     if (keys.ArrowRight || touchControls.isRightPressed) {
         playerPosition.left += playerSpeed;
         console.log("Moving right. Player position:", playerPosition, "Keys:", keys, "Touch Controls:", touchControls);
@@ -244,8 +335,8 @@ function gameLoop() {
 
     updatePositions();
 
+     // プレイヤーと火の玉の衝突判定
     const playerRect = player.getBoundingClientRect();
-
     for (const enemyObj of enemies) {
         const enemyRect = enemyObj.element.getBoundingClientRect();
         if (!enemyObj.passed && playerPosition.left > enemyObj.x) {
@@ -256,6 +347,19 @@ function gameLoop() {
         if (checkCollision(playerRect, enemyRect)) {
             handleGameOver();
             break;
+        }
+        if (enemyObj instanceof Fire) {
+            const fireRect = enemyObj.element.getBoundingClientRect();
+            if (checkCollision(playerRect, fireRect)) {
+                handleGameOver();
+                break;
+            }
+        } else if (enemyObj.element) {
+            const enemyRect = enemyObj.element.getBoundingClientRect();
+            if (checkCollision(playerRect, enemyRect)) {
+                handleGameOver();
+                break;
+            }
         }
     }
 
