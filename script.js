@@ -18,6 +18,8 @@ let startTime;
 let score = 0;
 let backgroundPosition = 0;
 const backgroundSpeed = 0.5;
+let highScore = 0;
+const highScoreDisplay = document.getElementById('highScore');
 
 const keys = {
     ArrowLeft: false,
@@ -105,11 +107,36 @@ function checkCollision(rect1, rect2) {
         rect1.top > rect2.bottom
     );
 }
+if (localStorage.getItem('highScore')) {
+    highScore = parseInt(localStorage.getItem('highScore'));
+}
+
+function updateHighScoreDisplay() {
+    highScoreDisplay.textContent = `High Score: ${highScore}`;
+}
+
+
 
 function handleGameOver() {
+    if (score > highScore) {
+        highScore = score;
+        localStorage.setItem('highScore', highScore);
+        updateHighScoreDisplay();
+    }
     alert('ゲームオーバー！敵に触れました！');
     resetGame();
 }
+
+function handleGameClear() { // ゴール時の処理
+    // ... ゴール処理
+    if (score > highScore) {
+        highScore = score;
+        localStorage.setItem('highScore', highScore);
+        updateHighScoreDisplay();
+    }
+}
+
+updateHighScoreDisplay(); // ページ読み込み時に表示
 
 function resetGame() {
     playerPosition = { left: 50, bottom: 100 };
@@ -123,6 +150,15 @@ function resetGame() {
     enemies = [];
     createEnemies();
     updatePositions();
+    for (const key in keys) {
+        keys[key] = false;
+    }
+    touchControls.isLeftPressed = false;
+    touchControls.isRightPressed = false;
+    touchControls.touchStartX = null;
+    touchStartY = null;
+    console.log("Game reset. Player position:", playerPosition, "Keys:", keys, "Touch Controls:", touchControls); // 詳細なコンソールログ
+
 }
 
 function updatePositions() {
@@ -189,6 +225,16 @@ function gameLoop() {
 
     if (playerMoved) {
         moveBackground();
+    }
+    if (keys.ArrowRight || touchControls.isRightPressed) {
+        playerPosition.left += playerSpeed;
+        console.log("Moving right. Player position:", playerPosition, "Keys:", keys, "Touch Controls:", touchControls);
+        playerMoved = true;
+    }
+    if (keys.ArrowLeft || touchControls.isLeftPressed) {
+        playerPosition.left -= playerSpeed;
+        console.log("Moving left. Player position:", playerPosition, "Keys:", keys, "Touch Controls:", touchControls);
+        playerMoved = true;
     }
 
     moveEnemies();

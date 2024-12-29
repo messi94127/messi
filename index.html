@@ -3,17 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>���X�N���[���Q�[��</title>
+    <title>ドラゴンボールマリオ</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <button id="startButton">ゲーム開始</button>
+    <audio id="bgm" loop>
+    <source src="maou_bgm_piano41.mp3" type="audio/mpeg">
+    </audio>
+    <script>
+    const bgm = document.getElementById('bgm');
+    const startButton = document.getElementById('startButton');
+    startButton.addEventListener('click', () => {
+        bgm.play();
+    });
+   </script>
     <div id="game">
         <div id="background"></div>
         <div id="player"></div>
         <div id="enemy-container"></div> <div id="goal"></div>
         <div id="ground"></div>
         <div id="score">Score: 0</div>
+        <div id="highScore">High Score: 0</div>
     </div>
     <script src="script.js"></script>
 </body>
+
 </html>
