@@ -40,6 +40,28 @@
         bgm3.play();
     });
    </script>
+   <button id="startButton4">ROMANTIC再生</button>
+    <audio id="bgm4" loop>
+    <source src="romantic.mp3" type="audio/mpeg">
+    </audio>
+    <script>
+    const bgm4 = document.getElementById('bgm4');
+    const startButton4 = document.getElementById('startButton4');
+    startButton4.addEventListener('click', () => {
+        bgm4.play();
+    });
+   </script>
+   <button id="startButton5">MAKAFUSHIGI再生</button>
+    <audio id="bgm5" loop>
+    <source src="makafushigi.mp3" type="audio/mpeg">
+    </audio>
+    <script>
+    const bgm5 = document.getElementById('bgm5');
+    const startButton5 = document.getElementById('startButton5');
+    startButton5.addEventListener('click', () => {
+        bgm5.play();
+    });
+   </script>
     <div id="game">
         <div id="background"></div>
         <div id="player"></div>
