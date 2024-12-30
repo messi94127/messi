@@ -4,6 +4,7 @@ const background = document.getElementById('background');
 const enemyContainer = document.getElementById('enemy-container');
 const goal = document.getElementById('goal');
 const scoreDisplay = document.getElementById('score');
+const highScoreDisplay = document.getElementById('highScore');
 
 let isJumping = false;
 let gravity = 1.5;
@@ -11,7 +12,9 @@ let velocityY = 0;
 let playerPosition = { left: 50, bottom: 100 };
 const playerSpeed = 5;
 
+// Fireオブジェクトとそれ以外の敵オブジェクトを分離 【変更点】
 let enemies = [];
+let fires = []; // Fireオブジェクトを格納する配列 【変更点】
 const numEnemies = 1000;
 
 let startTime;
@@ -19,7 +22,6 @@ let score = 0;
 let backgroundPosition = 0;
 const backgroundSpeed = 0.5;
 let highScore = 0;
-const highScoreDisplay = document.getElementById('highScore');
 
 const keys = {
     ArrowLeft: false,
@@ -34,12 +36,11 @@ const touchControls = {
 
 let touchStartY = null;
 
-// イベントリスナーの追加方法を変更 (touchstart、touchmove、touchendをgame要素に直接追加)
 game.addEventListener('touchstart', handleTouchStart, { passive: false });
 game.addEventListener('touchmove', handleTouchMove, { passive: false });
 game.addEventListener('touchend', handleTouchEnd, { passive: false });
 
-function handleTouchStart(e) {
+function handleTouchStart(e) { // 変更なし
     e.preventDefault();
     const touch = e.touches[0];
     touchControls.touchStartX = touch.clientX;
@@ -51,7 +52,7 @@ function handleTouchStart(e) {
     }
 }
 
-function handleTouchMove(e) {
+function handleTouchMove(e) { // 変更なし
     e.preventDefault();
     if (touchControls.touchStartX !== null) {
         const touch = e.touches[0];
@@ -78,7 +79,7 @@ function handleTouchMove(e) {
     }
 }
 
-function handleTouchEnd(e) {
+function handleTouchEnd(e) { // 変更なし
     e.preventDefault();
     touchControls.isLeftPressed = false;
     touchControls.isRightPressed = false;
@@ -86,8 +87,7 @@ function handleTouchEnd(e) {
     touchStartY = null;
 }
 
-// キーボードイベントリスナー
-document.addEventListener('keydown', (e) => {
+document.addEventListener('keydown', (e) => { // 変更なし
     if (e.code === 'Space' && !isJumping) {
         isJumping = true;
         velocityY = -20;
@@ -95,11 +95,11 @@ document.addEventListener('keydown', (e) => {
     keys[e.code] = true;
 });
 
-document.addEventListener('keyup', (e) => {
+document.addEventListener('keyup', (e) => { // 変更なし
     keys[e.code] = false;
 });
 
-function checkCollision(rect1, rect2) {
+function checkCollision(rect1, rect2) { // 変更なし
     return !(
         rect1.right < rect2.left ||
         rect1.left > rect2.right ||
@@ -107,11 +107,12 @@ function checkCollision(rect1, rect2) {
         rect1.top > rect2.bottom
     );
 }
-if (localStorage.getItem('highScore')) {
+
+if (localStorage.getItem('highScore')) { // 変更なし
     highScore = parseInt(localStorage.getItem('highScore'));
 }
 
-function updateHighScoreDisplay() {
+function updateHighScoreDisplay() { // 変更なし
     highScoreDisplay.textContent = `High Score: ${highScore}`;
 }
 
@@ -121,20 +122,12 @@ class GameObject {
         this.y = y;
         this.width = width;
         this.height = height;
-        this.element = element; // DOM要素への参照を保持
+        this.element = element;
     }
 
     getRect() {
         if (this.element) {
-            const rect = this.element.getBoundingClientRect();
-            return {
-                left: rect.left,
-                top: rect.top,
-                right: rect.right,
-                bottom: rect.bottom,
-                width: rect.width,
-                height: rect.height
-            };
+            return this.element.getBoundingClientRect();
         } else {
             return {
                 left: this.x,
@@ -143,7 +136,7 @@ class GameObject {
                 bottom: this.y + this.height,
                 width: this.width,
                 height: this.height
-            }
+            };
         }
     }
     move() {
@@ -152,7 +145,7 @@ class GameObject {
 }
 
 
-function handleGameOver(playerRect) { // playerRectを引数として受け取る
+function handleGameOver(playerRect) { // 変更なし
     if (score > highScore) {
         highScore = score;
         localStorage.setItem('highScore', highScore);
@@ -163,7 +156,7 @@ function handleGameOver(playerRect) { // playerRectを引数として受け取�
         if (!enemyObj.element) return false;
         const enemyRect = enemyObj.element.getBoundingClientRect();
         if (!enemyRect) return false;
-        return checkCollision(playerRect, enemyRect); // playerRectを使用
+        return checkCollision(playerRect, enemyRect);
     });
 
     if (collidedWithEnemy) {
@@ -174,19 +167,17 @@ function handleGameOver(playerRect) { // playerRectを引数として受け取�
     resetGame();
 }
 
-function handleGameClear() { // ゴール時の処理
+function handleGameClear() { // 変更なし
     if (score > highScore) {
         highScore = score;
         localStorage.setItem('highScore', highScore);
         updateHighScoreDisplay();
     }
-
 }
 
-updateHighScoreDisplay(); // ページ読み込み時に表示
+updateHighScoreDisplay();
 
-function resetGame() {
-    // プレイヤーの初期位置をリセット
+function resetGame() { // 変更点：Fireオブジェクトのリセット処理を追加
     playerPosition = { left: 50, bottom: 100 };
     isJumping = false;
     velocityY = 0;
@@ -195,9 +186,8 @@ function resetGame() {
     score = 0;
     scoreDisplay.textContent = `Score: ${score}`;
 
-    // 敵と火の玉をリセット（修正）
     enemies.forEach(enemyObj => {
-        if (enemyObj.element) { // elementが存在するか確認
+        if (enemyObj.element) {
             enemyObj.element.remove();
         }
     });
@@ -205,7 +195,6 @@ function resetGame() {
     createEnemies();
     updatePositions();
 
-    // キー状態をリセット
     for (const key in keys) {
         keys[key] = false;
     }
@@ -213,25 +202,37 @@ function resetGame() {
     touchControls.isRightPressed = false;
     touchControls.touchStartX = null;
     touchStartY = null;
+
+    fires.forEach(fire => fire.element.remove()); // Fireオブジェクトのリセット 【追加】
+    fires = []; // Fireオブジェクトのリセット 【追加】
 }
 
-function updatePositions() {
+function updatePositions() { // 変更点：Fireオブジェクトの位置更新を追加
     player.style.left = `${playerPosition.left}px`;
     player.style.bottom = `${playerPosition.bottom}px`;
     enemies.forEach(enemyObj => {
-        enemyObj.element.style.left = `${enemyObj.x}px`;
+        if (enemyObj.element) {
+            enemyObj.element.style.left = `${enemyObj.x}px`;
+        }
     });
+    fires.forEach(fire => fire.element.style.left = `${fire.x}px`); // Fireオブジェクトの位置更新 【追加】
 }
 
-function moveBackground() {
+function moveBackground() { // 変更なし
     backgroundPosition -= playerSpeed * backgroundSpeed;
     background.style.left = `${backgroundPosition}px`;
     if (backgroundPosition <= -background.offsetWidth / 2) {
         backgroundPosition += background.offsetWidth / 2;
     }
 }
-class Fire {
+
+// ... (前略)
+
+class Fire extends GameObject {
     constructor(x, y, direction) {
+        // super() を最初に呼び出す 【修正点】
+        super(x, y, 20, 20); // Fireオブジェクトの幅と高さを設定 【修正点】
+
         this.element = document.createElement('div');
         if (!this.element) {
             console.error("element is null");
@@ -239,16 +240,12 @@ class Fire {
         this.element.classList.add('fire');
         this.element.style.position = 'absolute';
         this.element.style.left = `${x}px`;
-        this.y = y - 20; // ★修正
+        this.y = y - 20;
         this.element.style.bottom = `${this.y}px`;
         this.x = x;
         this.speed = 5;
         this.direction = direction;
         enemyContainer.appendChild(this.element);
-        console.log("element appended to enemyContainer:", this.element);
-        if (!enemyContainer.contains(this.element)) {
-            console.error("child was not appended to container", enemyContainer, this.element);
-        }
     }
 
     move() {
@@ -257,7 +254,7 @@ class Fire {
 
         if (this.x < 0 || this.x > game.offsetWidth) {
             this.element.remove();
-            return true; // ★修正
+            return true;
         }
         return false;
     }
@@ -265,13 +262,15 @@ class Fire {
     getRect() {
         return {
             left: this.x,
-            top: this.y + 20, // ★修正
+            top: this.y,
             right: this.x + 20,
-            bottom: this.y
+            bottom: this.y + 20
         };
     }
 }
-class FireBreathingEnemy extends GameObject {
+
+
+class FireBreathingEnemy extends GameObject { // 変更なし
     constructor(x, y) {
         const element = document.createElement('div');
         element.classList.add('enemy', 'fire-breathing-enemy');
@@ -292,17 +291,14 @@ class FireBreathingEnemy extends GameObject {
     }
     fireBreath() {
         if (Date.now() - this.lastFireBreathTime > this.fireBreathInterval) {
-            const fire = new Fire(this.x, this.y + 20, -1);
-            console.log("Fire object created:", fire); // ★追加 (Fireオブジェクトの中身を確認)
-            console.log("Fire object element:", fire.element) //★追加 (Fireオブジェクトのelementを確認)
-            enemies.push(fire);
-            console.log("Enemies array after push:", enemies); // ★追加 (enemies配列全体を確認)
+            const fire = new Fire(this.x, this.y + 20, -1); // Fireオブジェクト生成
+            fires.push(fire); // fires配列に追加
             this.lastFireBreathTime = Date.now();
         }
     }
 }
 
-class FastEnemy extends GameObject {
+class FastEnemy extends GameObject { // 変更なし
     constructor(x, y) {
         const element = document.createElement('div');
         element.classList.add('enemy', 'fast-enemy');
@@ -321,7 +317,8 @@ class FastEnemy extends GameObject {
         }
     }
 }
-class Enemy extends GameObject {
+
+class Enemy extends GameObject { // 変更なし
     constructor(x, y) {
         const element = document.createElement('div');
         element.classList.add('enemy');
@@ -329,7 +326,7 @@ class Enemy extends GameObject {
         element.style.left = `${x}px`;
         element.style.bottom = `${y}px`;
         enemyContainer.appendChild(element);
-        super(x, y, 50, 50, element); // 親クラスのコンストラクタを呼び出す
+        super(x, y, 50, 50, element);
     }
     move() {
         this.x -= playerSpeed * backgroundSpeed;
@@ -340,14 +337,12 @@ class Enemy extends GameObject {
     }
 }
 
-
-
-function createEnemies() {
+function createEnemies() { // 変更なし
     for (let i = 0; i < numEnemies; i++) {
         const x = 800 + i * 500;
         const enemyType = Math.random();
         if (enemyType < 0.33) {
-            enemies.push(new Enemy(x, 100)); // 通常の敵をインスタンスとして追加
+            enemies.push(new Enemy(x, 100));
         } else if (enemyType < 0.66) {
             enemies.push(new FireBreathingEnemy(x, 100));
         } else {
@@ -356,35 +351,37 @@ function createEnemies() {
     }
 }
 
-function moveEnemies() {
+function moveEnemies() { // 変更なし
     enemies.forEach(enemyObj => {
-        // enemyObj が move メソッドを持っているか確認
         if (typeof enemyObj.move === 'function') {
             enemyObj.move();
         }
-
-        // または、特定の敵の種類を反復処理する場合
-        // if (enemyObj instanceof FireBreathingEnemy || enemyObj instanceof FastEnemy) {
-        //   enemyObj.move();
-        // }
     });
 }
 
-function checkXOverlap(playerRect, enemyRect) {
+function checkXOverlap(playerRect, enemyRect) { // 変更なし
     const playerCenterX = playerRect.left + playerRect.width / 2;
     const enemyCenterX = enemyRect.left + enemyRect.width / 2;
     const overlapWidth = (playerRect.width + enemyRect.width) / 2;
-    return Math.abs(playerCenterX - enemyCenterX) < overlapWidth * 0.8;//0.8は重なり具合の調整
+    return Math.abs(playerCenterX - enemyCenterX) < overlapWidth * 0.8;
 }
 
+// ... (前略)
+
 function gameLoop() {
+    // ... (ジャンプ、移動処理は変更なし)
     if (isJumping) {
-        velocityY += gravity;
+        velocityY += gravity; // 重力を加算
         playerPosition.bottom -= velocityY;
+
+        // 地面との衝突判定を追加 【重要な修正】
         if (playerPosition.bottom <= 100) {
             playerPosition.bottom = 100;
             isJumping = false;
+            velocityY = 0; // 着地時にvelocityYをリセット 【重要な修正】
         }
+
+        // 空中での左右移動をスムーズにするため、係数を追加
         const airControl = 0.1;
         if (keys.ArrowRight || touchControls.isRightPressed) {
             playerPosition.left += playerSpeed * airControl;
@@ -392,7 +389,8 @@ function gameLoop() {
         if (keys.ArrowLeft || touchControls.isLeftPressed) {
             playerPosition.left -= playerSpeed * airControl;
         }
-    } else { // 接地時のみの処理
+    } else {
+        // 地上にいるときの左右移動
         if (keys.ArrowRight || touchControls.isRightPressed) {
             playerPosition.left += playerSpeed;
         }
@@ -401,62 +399,43 @@ function gameLoop() {
         }
     }
 
-    // 移動処理はここに集約
     let playerMoved = false;
-    if (keys.ArrowRight || touchControls.isRightPressed) {
-        playerPosition.left += playerSpeed;
-        playerMoved = true;
-    }
-    if (keys.ArrowLeft || touchControls.isLeftPressed) {
-        playerPosition.left -= playerSpeed;
-        playerMoved = true;
-    }
+    // ... (移動処理は変更なし)
 
     if (playerMoved) {
         moveBackground();
     }
 
-    // 敵の移動と火を吐く処理 (Fireオブジェクトの移動処理を追加)
+    // 敵とFireオブジェクトの移動と処理を分離 【変更点】
     for (let i = enemies.length - 1; i >= 0; i--) {
-        const enemyObj = enemies[i];
-        if (enemyObj instanceof FireBreathingEnemy) {
-            enemyObj.fireBreath();
-        } else if (enemyObj instanceof Fire) { // Fireオブジェクトの移動
-            if (enemyObj.move()) { //画面外に出たら削除
-                enemies.splice(i, 1);
-                enemyObj.element.remove();
-            }
+        enemies[i].move();
+        if (enemies[i] instanceof FireBreathingEnemy) {
+            enemies[i].fireBreath();
         }
     }
+
+    for (let i = fires.length - 1; i >= 0; i--) { // Fireオブジェクトの移動と削除 【変更点】
+        if (fires[i].move()) {
+            fires.splice(i, 1);
+            i--; // spliceで配列の要素が削除されたので、インデックスを調整
+        }
+    }
+
     updatePositions();
 
-    if (playerPosition.left < 0) playerPosition.left = 0;
-    if (playerPosition.left > game.offsetWidth - player.offsetWidth) playerPosition.left = game.offsetWidth - player.offsetWidth;
+    if (playerPosition.left < 0) playerPosition.left = 0; // 変更なし
+    if (playerPosition.left > game.offsetWidth - player.offsetWidth) playerPosition.left = game.offsetWidth - player.offsetWidth; // 変更なし
 
-    moveEnemies();
+    moveEnemies(); // 変更なし
 
-
-    // 衝突判定ループ
-    const playerRect = player.getBoundingClientRect();
+    // 衝突判定の最適化 【変更点】
+    const playerRect = player.getBoundingClientRect(); // キャッシュではなく毎フレーム取得 【変更点】
     const enemiesToRemove = [];
     let gameOver = false;
 
-    // 敵と火の玉の衝突判定
+    // 敵との衝突判定 【変更点】
     for (const enemyObj of enemies) {
-        if (!enemyObj) continue;
-
         const enemyRect = enemyObj.getRect();
-        if (!enemyRect) continue;
-
-        if (enemyObj instanceof Fire) {
-            const fireRect = enemyObj.element.getBoundingClientRect();
-            if (checkCollision(playerRect, fireRect)) {
-                gameOver = true;
-                enemyObj.element.remove(); // DOMから削除
-            break;
-            }
-        }
-
         if (checkXOverlap(playerRect, enemyRect) &&
             playerRect.bottom >= enemyRect.top - 10 &&
             playerRect.bottom <= enemyRect.top + 10 &&
@@ -465,12 +444,12 @@ function gameLoop() {
             scoreDisplay.textContent = `Score: ${score}`;
             enemiesToRemove.push(enemyObj);
             velocityY = -15;
-        } else if(checkCollision(playerRect, enemyRect)) {
-            // 通常の敵との衝突
+        } else if (checkCollision(playerRect, enemyRect)) {
             gameOver = true;
             break;
         }
     }
+
     if (gameOver) {
         handleGameOver(playerRect);
     } else {
@@ -482,7 +461,23 @@ function gameLoop() {
         });
     }
 
-    const goalRect = goal.getBoundingClientRect();
+    // Fireオブジェクトとの衝突判定 【変更点】
+    for (let i = fires.length - 1; i >= 0; i--) {
+        const fire = fires[i];
+        const fireRect = fire.getRect();
+        if (checkCollision(playerRect, fireRect)) {
+            gameOver = true;
+            fires.splice(i, 1);
+            fire.element.remove();
+            break;
+        }
+    }
+
+    if (gameOver) {
+        handleGameOver(playerRect);
+    }
+
+    const goalRect = goal.getBoundingClientRect(); // 変更なし
     if (checkCollision(playerRect, goalRect)) {
         const endTime = Date.now();
         score = Math.floor((endTime - startTime) / 1000);
@@ -493,5 +488,5 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
-resetGame();
-gameLoop();
+resetGame(); // 変更なし
+gameLoop(); // 変更なし
