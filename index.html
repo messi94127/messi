@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ドラゴンボールブラザーズver1.9</title>
+    <title>ドラゴンボールブラザーズver2.0</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -27,6 +27,17 @@
     const startButton2 = document.getElementById('startButton2');
     startButton2.addEventListener('click', () => {
         bgm2.play();
+    });
+   </script>
+   <button id="startButton3">WEGOTTA再生</button>
+    <audio id="bgm3" loop>
+    <source src="wegottapower.mp3" type="audio/mpeg">
+    </audio>
+    <script>
+    const bgm3 = document.getElementById('bgm3');
+    const startButton3 = document.getElementById('startButton3');
+    startButton3.addEventListener('click', () => {
+        bgm3.play();
     });
    </script>
     <div id="game">
