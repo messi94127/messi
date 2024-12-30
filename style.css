@@ -28,6 +28,7 @@ body {
     background-image: url('goku2.jpg');
     background-size: cover;
     background-position: center bottom;
+    border-radius: 50%; /* ‰~Œ`‚É‚·‚é */
     bottom: 100px;
     left: 50px;
 }
@@ -39,6 +40,7 @@ body {
     background-image: url('saibaiman.jpg');
     background-size: cover;
     background-position: center bottom;
+    border-radius: 50%; /* ‰~Œ`‚É‚·‚é */
     #background-color: green;
     bottom: 100px;
 }
@@ -95,6 +97,16 @@ body {
     background-image: url('bata.jpg');
     background-size: cover;
     background-position: center bottom;
+    border-radius: 50%; /* ‰~Œ`‚É‚·‚é */
     width: 40px;
     height: 40px;
+}
+.jumping-enemy {
+    width: 50px;
+    height: 50px;
+    background-image: url('freezar.jpg');
+    background-size: cover;
+    background-position: center bottom;
+    border-radius: 50%; /* ‰~Œ`‚É‚·‚é */
+    position: absolute;
 }

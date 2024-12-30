@@ -341,6 +341,52 @@ class Enemy extends GameObject {
     }
 }
 
+class JumpingEnemy extends GameObject {
+    constructor(x, y) {
+        const element = document.createElement('div');
+        element.classList.add('enemy', 'jumping-enemy');
+        element.style.position = 'absolute';
+        element.style.left = `${x}px`;
+        element.style.bottom = `${y}px`;
+        enemyContainer.appendChild(element);
+        super(x, y, 50, 50, element);
+        this.jumpHeight = 5; // ジャンプの高さ
+        this.isJumping = false;
+        this.gravity = 1.5;
+        this.velocityY = 0;
+        this.groundY = y; // 初期の地面の高さ
+    }
+
+    move() {
+        // ジャンプロジック
+        if (!this.isJumping) {
+            this.isJumping = true;
+            this.velocityY = -15; // ジャンプ初速度
+        }
+
+        if (this.isJumping) {
+            this.velocityY += this.gravity; // 重力の影響を追加
+            this.y -= this.velocityY;
+
+            // 地面に戻ったらジャンプを終了
+            if (this.y <= this.groundY) {
+                this.y = this.groundY;
+                this.isJumping = false;
+                this.velocityY = 0;
+            }
+        }
+
+        // 左方向への移動
+        this.x -= playerSpeed * backgroundSpeed;
+        if (this.x < -100) {
+            this.x = game.offsetWidth + Math.random() * 500; // 再配置
+        }
+
+        // DOMに反映
+        this.element.style.left = `${this.x}px`;
+        this.element.style.bottom = `${this.y}px`;
+    }
+}
 
 
 function createEnemies() {
@@ -348,27 +394,20 @@ function createEnemies() {
         const x = 800 + i * 500;
         const enemyType = Math.random();
         if (enemyType < 0.33) {
-            enemies.push(new Enemy(x, 100)); // 通常の敵をインスタンスとして追加
-        // } else if (enemyType < 0.66) {
-        //     enemies.push(new FireBreathingEnemy(x, 100));
-        } 
-        else{
-            enemies.push(new FastEnemy(x, 100));
+            enemies.push(new Enemy(x, 100)); // 通常の敵
+        } else if (enemyType < 0.66) {
+            enemies.push(new FastEnemy(x, 100)); // 高速な敵
+        } else {
+            enemies.push(new JumpingEnemy(x, 100)); // ジャンプする敵
         }
     }
 }
 
 function moveEnemies() {
     enemies.forEach(enemyObj => {
-        // enemyObj が move メソッドを持っているか確認
         if (typeof enemyObj.move === 'function') {
-            enemyObj.move();
+            enemyObj.move(); // ジャンプ敵を含む全ての敵を移動
         }
-
-        // または、特定の敵の種類を反復処理する場合
-        // if (enemyObj instanceof FireBreathingEnemy || enemyObj instanceof FastEnemy) {
-        //   enemyObj.move();
-        // }
     });
 }
 
