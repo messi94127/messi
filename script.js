@@ -442,12 +442,20 @@ function gameLoop() {
     let gameOver = false;
 
     // 敵と火の玉の衝突判定
-    for (let i = enemies.length - 1; i >= 0; i--) {
-        const enemyObj = enemies[i];
+    for (const enemyObj of enemies) {
         if (!enemyObj) continue;
 
         const enemyRect = enemyObj.getRect();
         if (!enemyRect) continue;
+
+        if (enemyObj instanceof Fire) {
+            const fireRect = enemyObj.element.getBoundingClientRect();
+            if (checkCollision(playerRect, fireRect)) {
+                gameOver = true;
+                enemyObj.element.remove(); // DOMから削除
+            break;
+            }
+        }
 
         if (checkXOverlap(playerRect, enemyRect) &&
             playerRect.bottom >= enemyRect.top - 10 &&
@@ -457,16 +465,10 @@ function gameLoop() {
             scoreDisplay.textContent = `Score: ${score}`;
             enemiesToRemove.push(enemyObj);
             velocityY = -15;
-        } else if (checkCollision(playerRect, enemyRect)) {
-            if (enemyObj instanceof Fire) { // 火の玉との衝突
-                gameOver = true;
-                enemies.splice(i, 1); // enemies配列から削除
-                enemyObj.element.remove(); // DOMから削除
-                break;
-            } else { // 通常の敵との衝突
-                gameOver = true;
-                break;
-            }
+        } else if(checkCollision(playerRect, enemyRect)) {
+            // 通常の敵との衝突
+            gameOver = true;
+            break;
         }
     }
     if (gameOver) {
