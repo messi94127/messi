@@ -443,24 +443,33 @@ class InvincibleItem extends GameObject {
 }
 function setInvincible(duration = 5000) {
     if (isInvincible) {
-        console.log('Already invincible');
-        return; // 重複して無敵にならないように
+        console.log('Already invincible: Extending duration');
+        clearTimeout(invincibleTimeout); // 既存のタイマーをキャンセル
+    } else {
+        isInvincible = true;
+        player.classList.add('invincible'); // クラスを追加して画像を切り替える
+        console.log('Invincible activated');
     }
-    isInvincible = true;
-    player.classList.add('invincible'); // プレイヤーにクラスを追加
-    console.log('Invincible activated:', isInvincible); // デバッグログ
 
-    setTimeout(() => {
+    invincibleTimeout = setTimeout(() => {
         isInvincible = false;
-        player.classList.remove('invincible'); // プレイヤーからクラスを削除
-        console.log('Invincible deactivated:', isInvincible); // デバッグログ
-    }, duration); // 指定時間後に無敵解除
+        player.classList.remove('invincible'); // クラスを削除して元の画像に戻す
+        console.log('Invincible deactivated');
+    }, duration);
 }
 function checkXOverlap(playerRect, enemyRect) {
     const playerCenterX = playerRect.left + playerRect.width / 2;
     const enemyCenterX = enemyRect.left + enemyRect.width / 2;
     const overlapWidth = (playerRect.width + enemyRect.width) / 2;
     return Math.abs(playerCenterX - enemyCenterX) < overlapWidth * 0.8;//0.8は重なり具合の調整
+}
+function stopOtherAudio(currentAudio) {
+    const allAudioElements = document.querySelectorAll('audio');
+    allAudioElements.forEach(audio => {
+        if (audio !== currentAudio && !audio.paused) {
+            audio.pause(); // 他の音声を停止
+        }
+    });
 }
 
 function gameLoop() {
@@ -534,11 +543,25 @@ function gameLoop() {
         const enemyRect = enemyObj.getRect();
         if (!enemyRect) continue;
 
+        // 効果音オーディオ要素を取得
+        const kuririSound = document.getElementById('kuririSound');
+        // console.log(kuririSound);
         if (enemyObj instanceof InvincibleItem) {
             // アイテムに当たった場合
             if (checkCollision(playerRect, enemyRect)) {
                 setInvincible(); // 無敵状態を有効化
                 enemiesToRemove.push(enemyObj); // アイテムを削除対象に追加
+            
+                // 再生中フラグをチェック
+                if (!kuririSound.paused && !kuririSound.ended) {
+                    console.warn('kuririSound is already playing, skipping new play() request.');
+                } else {
+                    kuririSound.currentTime = 0; // 再生位置をリセット
+                    kuririSound.play().catch(error => {
+                        console.error('Playback error:', error.message); // エラーの詳細をログ
+                    });
+                }
+            
                 break; // 複数同時取得を防ぐ
             }
         } 
@@ -564,6 +587,8 @@ function gameLoop() {
         //     break;
         //     }
         // }
+        // 効果音オーディオ要素を取得
+        const jumpOnEnemySound = document.getElementById('jumpOnEnemySound');
 
         if (checkXOverlap(playerRect, enemyRect) &&
             playerRect.bottom >= enemyRect.top - 10 &&
@@ -572,6 +597,10 @@ function gameLoop() {
             score += 100;
             scoreDisplay.textContent = `Score: ${score}`;
             enemiesToRemove.push(enemyObj);
+
+            // 効果音を再生
+            jumpOnEnemySound.currentTime = 0; // 再生位置をリセット
+            jumpOnEnemySound.play();
             velocityY = -15;
             if(isInvincible){
                 break;
