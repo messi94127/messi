@@ -110,3 +110,26 @@ body {
     border-radius: 50%; /* 円形にする */
     position: absolute;
 }
+.invincible-item {
+    width: 30px;
+    height: 30px;
+    background-image: url('krillin.jpg');
+    background-size: cover;
+    background-position: center bottom;
+    border-radius: 50%; /* 円形にする */
+    position: absolute;
+}
+#player.invincible {
+    background-image: url('supergoku.jpg');
+    animation: blink 0.5s infinite; /* 点滅アニメーション */
+    opacity: 0.5; /* 半透明にして無敵状態を示す */
+}
+
+@keyframes blink {
+    0%, 100% {
+        opacity: 1; /* 通常の透明度 */
+    }
+    50% {
+        opacity: 0.5; /* 半透明になる */
+    }
+}

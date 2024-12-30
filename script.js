@@ -6,6 +6,7 @@ const goal = document.getElementById('goal');
 const scoreDisplay = document.getElementById('score');
 
 let isJumping = false;
+let isInvincible = false;
 let gravity = 1.5;
 let velocityY = 0;
 let playerPosition = { left: 50, bottom: 100 };
@@ -393,24 +394,68 @@ function createEnemies() {
     for (let i = 0; i < numEnemies; i++) {
         const x = 800 + i * 500;
         const enemyType = Math.random();
-        if (enemyType < 0.33) {
-            enemies.push(new Enemy(x, 100)); // 通常の敵
-        } else if (enemyType < 0.66) {
-            enemies.push(new FastEnemy(x, 100)); // 高速な敵
+        if (enemyType < 0.3) {
+            enemies.push(new Enemy(x, 100));
+        } else if (enemyType < 0.6) {
+            enemies.push(new FastEnemy(x, 100));
+        } else if (enemyType < 0.9) {
+            enemies.push(new JumpingEnemy(x, 100));
         } else {
-            enemies.push(new JumpingEnemy(x, 100)); // ジャンプする敵
+            enemies.push(new InvincibleItem(x, 100)); // 無敵アイテムを少量追加
         }
     }
 }
 
 function moveEnemies() {
-    enemies.forEach(enemyObj => {
+    for (let i = enemies.length - 1; i >= 0; i--) {
+        const enemyObj = enemies[i];
         if (typeof enemyObj.move === 'function') {
-            enemyObj.move(); // ジャンプ敵を含む全ての敵を移動
+            const shouldRemove = enemyObj.move(); // アイテムや敵を左に移動
+            if (shouldRemove) {
+                enemies.splice(i, 1); // 画面外の敵やアイテムをリストから削除
+            }
         }
-    });
+    }
 }
 
+class InvincibleItem extends GameObject {
+    constructor(x, y) {
+        const element = document.createElement('div');
+        element.classList.add('invincible-item');
+        element.style.position = 'absolute';
+        element.style.left = `${x}px`;
+        element.style.bottom = `${y}px`;
+        enemyContainer.appendChild(element);
+        super(x, y, 30, 30, element); // サイズを小さめに設定
+    }
+
+    move() {
+        this.x -= playerSpeed * backgroundSpeed; // 左に移動
+        this.element.style.left = `${this.x}px`;
+
+        // 画面外に出たら削除
+        if (this.x < -30) {
+            this.element.remove();
+            return true; // 移動が終わった（削除が必要）ことを示す
+        }
+        return false;
+    }
+}
+function setInvincible(duration = 5000) {
+    if (isInvincible) {
+        console.log('Already invincible');
+        return; // 重複して無敵にならないように
+    }
+    isInvincible = true;
+    player.classList.add('invincible'); // プレイヤーにクラスを追加
+    console.log('Invincible activated:', isInvincible); // デバッグログ
+
+    setTimeout(() => {
+        isInvincible = false;
+        player.classList.remove('invincible'); // プレイヤーからクラスを削除
+        console.log('Invincible deactivated:', isInvincible); // デバッグログ
+    }, duration); // 指定時間後に無敵解除
+}
 function checkXOverlap(playerRect, enemyRect) {
     const playerCenterX = playerRect.left + playerRect.width / 2;
     const enemyCenterX = enemyRect.left + enemyRect.width / 2;
@@ -489,14 +534,36 @@ function gameLoop() {
         const enemyRect = enemyObj.getRect();
         if (!enemyRect) continue;
 
-        if (enemyObj instanceof Fire) {
-            const fireRect = enemyObj.element.getBoundingClientRect();
-            if (checkCollision(playerRect, fireRect)) {
-                gameOver = true;
-                enemyObj.element.remove(); // DOMから削除
-            break;
+        if (enemyObj instanceof InvincibleItem) {
+            // アイテムに当たった場合
+            if (checkCollision(playerRect, enemyRect)) {
+                setInvincible(); // 無敵状態を有効化
+                enemiesToRemove.push(enemyObj); // アイテムを削除対象に追加
+                break; // 複数同時取得を防ぐ
             }
-        }
+        } 
+        // if (!isInvincible) {
+        //     // if (checkCollision(playerRect, enemyRect)) {
+        //     //     gameOver = true; // 無敵状態でない場合にゲームオーバー
+        //     //     break;
+        //     // }
+        // } else {
+        //     console.log('Invincible: No collision effect'); // デバッグ用ログ
+        //     break;
+        // }
+        // if (!isInvincible && checkCollision(playerRect, enemyRect)) {
+        //     gameOver = true; // 無敵状態でない場合のみゲームオーバーになる
+        //     break;
+        // }
+
+        // if (enemyObj instanceof Fire) {
+        //     const fireRect = enemyObj.element.getBoundingClientRect();
+        //     if (checkCollision(playerRect, fireRect)) {
+        //         gameOver = true;
+        //         enemyObj.element.remove(); // DOMから削除
+        //     break;
+        //     }
+        // }
 
         if (checkXOverlap(playerRect, enemyRect) &&
             playerRect.bottom >= enemyRect.top - 10 &&
@@ -506,7 +573,13 @@ function gameLoop() {
             scoreDisplay.textContent = `Score: ${score}`;
             enemiesToRemove.push(enemyObj);
             velocityY = -15;
-        } else if(checkCollision(playerRect, enemyRect)) {
+            if(isInvincible){
+                break;
+            }
+        } else if(isInvincible){
+            //何もしない
+        }
+        else if(checkCollision(playerRect, enemyRect)) {
             // 通常の敵との衝突
             gameOver = true;
             break;
