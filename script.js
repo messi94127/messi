@@ -311,7 +311,7 @@ class FastEnemy extends GameObject {
         element.style.bottom = `${y}px`;
         enemyContainer.appendChild(element);
         super(x, y, 50, 50, element);
-        this.speed = 12;
+        this.speed = 8;
     }
     move() {
         this.x -= this.speed;
@@ -349,9 +349,10 @@ function createEnemies() {
         const enemyType = Math.random();
         if (enemyType < 0.33) {
             enemies.push(new Enemy(x, 100)); // 通常の敵をインスタンスとして追加
-        } else if (enemyType < 0.66) {
-            enemies.push(new FireBreathingEnemy(x, 100));
-        } else {
+        // } else if (enemyType < 0.66) {
+        //     enemies.push(new FireBreathingEnemy(x, 100));
+        } 
+        else{
             enemies.push(new FastEnemy(x, 100));
         }
     }
