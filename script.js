@@ -54,7 +54,7 @@ const difficultySettings = {
         label: '中 (Medium)',
     },
     hard: {
-        enemySpacing: 150,
+        enemySpacing: 200,
         enemySpeedMultiplier: 0.7,
         label: '高 (Hard)',
     },
