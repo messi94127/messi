@@ -242,3 +242,36 @@ body {
 .difficulty-button:active {
     background-color: #003f7f;
 }
+
+.jump-boost-item {
+    width: 30px;
+    height: 30px;
+    background-image: url('gohan.jpg');
+    background-size: cover;
+    background-position: center bottom;
+    border: 2px solid gold;
+    border-radius: 50%;
+    animation: glow 1s infinite alternate;
+}
+
+@keyframes glow {
+    from {
+        box-shadow: 0 0 10px yellow;
+    }
+    to {
+        box-shadow: 0 0 20px gold;
+    }
+}
+
+.player.boosted {
+    animation: boostEffect 0.5s infinite alternate;
+}
+
+@keyframes boostEffect {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(1.2);
+    }
+}

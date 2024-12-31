@@ -42,6 +42,11 @@ let enemySpeedMultiplier = 1; // 敵スピードの倍率デフォルト
 const startMessage = document.getElementById('startMessage');
 let isGameStarted = false;
 
+let isJumpBoosted = false;
+let originalJumpPower = -20; // 元のジャンプ力
+let boostedJumpPower = -60; // ジャンプ力3倍
+let jumpBoostTimeout = null; // 効果終了タイマー
+
 const difficultySettings = {
     easy: {
         enemySpacing: 500,
@@ -111,6 +116,28 @@ function showStartMessage() {
     addButtonEvent('easyButton', 'easy');
     addButtonEvent('mediumButton', 'medium');
     addButtonEvent('hardButton', 'hard');
+}
+
+function applyJumpBoost(duration = 5000) {
+    if (isJumpBoosted) {
+        // 既に効果中の場合はタイマーをリセット
+        clearTimeout(jumpBoostTimeout);
+    } else {
+        // 初回の効果適用
+        isJumpBoosted = true;
+        player.classList.add('boosted'); // 見た目の変化を付ける場合
+    }
+
+    // ジャンプ力を変更
+    originalJumpPower = velocityY; // 現在のジャンプ力を保存
+    velocityY = boostedJumpPower; // 強化されたジャンプ力を適用
+
+    // 一定時間後にジャンプ力を元に戻す
+    jumpBoostTimeout = setTimeout(() => {
+        isJumpBoosted = false;
+        velocityY = originalJumpPower; // ジャンプ力を元に戻す
+        player.classList.remove('boosted'); // 見た目を元に戻す
+    }, duration);
 }
 // function selectDifficulty(selectedDifficulty) {
 //     difficulty = selectedDifficulty;
@@ -653,9 +680,41 @@ class RandomMovingEnemy extends GameObject {
         return false;
     }
 }
+
+class JumpBoostItem extends GameObject {
+    constructor(x, y) {
+        const element = document.createElement('div');
+        element.classList.add('jump-boost-item');
+        element.style.position = 'absolute';
+
+        // y座標をプレイヤーが届く高さに制限
+        const minY = 100; // プレイヤーの地面の高さ
+        const maxY = 200; // プレイヤーがジャンプで届く高さ
+        y = Math.min(Math.max(y, minY), maxY);
+
+        element.style.left = `${x}px`;
+        element.style.bottom = `${y}px`;
+        enemyContainer.appendChild(element);
+        super(x, y, 30, 30, element); // サイズを小さめに設定
+    }
+
+    move() {
+        // 左方向への移動
+        this.x -= playerSpeed * backgroundSpeed;
+        this.element.style.left = `${this.x}px`;
+
+        // 画面外に出たら削除
+        if (this.x < -30) {
+            this.element.remove();
+            return true;
+        }
+        return false;
+    }
+}
+
 function createEnemies() {
     for (let i = 0; i < numEnemies; i++) {
-        const x = 800 + i * enemySpacing; // 敵の間隔を 難易度によって変更
+        const x = 800 + i * enemySpacing;
         const enemyType = Math.random();
         if (enemyType < 0.25) {
             enemies.push(new Enemy(x, 100));
@@ -663,10 +722,12 @@ function createEnemies() {
             enemies.push(new FastEnemy(x, 100));
         } else if (enemyType < 0.75) {
             enemies.push(new JumpingEnemy(x, 100));
-        } else if (enemyType < 0.9) {
+        } else if (enemyType < 0.85) {
             enemies.push(new RandomMovingEnemy(x, Math.random() * 400));
+        } else if (enemyType < 0.95) { // 確率を調整して追加
+            enemies.push(new JumpBoostItem(x, Math.random() * 400)); // ジャンプブーストアイテム
         } else {
-            enemies.push(new InvincibleItem(x, 100)); // 無敵アイテムを少量追加
+            enemies.push(new InvincibleItem(x, 100));
         }
     }
 }
@@ -815,6 +876,15 @@ function gameLoop() {
         const enemyRect = enemyObj.getRect();
         if (!enemyRect) continue;
 
+        // ジャンプブーストアイテムに触れた場合
+        if (enemyObj instanceof JumpBoostItem) {
+            if (checkCollision(playerRect, enemyRect)) {
+                applyJumpBoost(); // ジャンプ力を増加
+                enemiesToRemove.push(enemyObj); // アイテムを削除対象に追加
+                break;
+            }
+        }
+
         // 効果音オーディオ要素を取得
         const kuririSound = document.getElementById('kuririSound');
         // console.log(kuririSound);
@@ -823,7 +893,7 @@ function gameLoop() {
             if (checkCollision(playerRect, enemyRect)) {
                 setInvincible(); // 無敵状態を有効化
                 enemiesToRemove.push(enemyObj); // アイテムを削除対象に追加
-            
+
                 // 再生中フラグをチェック
                 if (!kuririSound.paused && !kuririSound.ended) {
                     console.warn('kuririSound is already playing, skipping new play() request.');
@@ -833,10 +903,10 @@ function gameLoop() {
                         console.error('Playback error:', error.message); // エラーの詳細をログ
                     });
                 }
-            
+
                 break; // 複数同時取得を防ぐ
             }
-        } 
+        }
         // if (!isInvincible) {
         //     // if (checkCollision(playerRect, enemyRect)) {
         //     //     gameOver = true; // 無敵状態でない場合にゲームオーバー
@@ -874,13 +944,13 @@ function gameLoop() {
             jumpOnEnemySound.currentTime = 0; // 再生位置をリセット
             jumpOnEnemySound.play();
             velocityY = -15;
-            if(isInvincible){
+            if (isInvincible) {
                 break;
             }
-        } else if(isInvincible){
+        } else if (isInvincible) {
             //何もしない
         }
-        else if(checkCollision(playerRect, enemyRect)) {
+        else if (checkCollision(playerRect, enemyRect)) {
             // 通常の敵との衝突
             gameOver = true;
             break;
