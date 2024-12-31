@@ -165,3 +165,80 @@ body {
 .overlay.visible {
     display: flex; /* 表示時にフレックスレイアウトを使用 */
 }
+
+#startMessage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    z-index: 1000;
+    font-size: 18px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.fadeOut {
+    animation: fadeOut 1s ease-in-out;
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+.highlight {
+    color: gold;
+    font-size: 2rem;
+    animation: highlightGlow 1.5s infinite alternate;
+}
+
+@keyframes highlightGlow {
+    from {
+        text-shadow: 0 0 10px gold, 0 0 20px gold;
+    }
+    to {
+        text-shadow: 0 0 20px yellow, 0 0 30px yellow;
+    }
+}
+
+#difficulty-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.difficulty-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.difficulty-button:hover {
+    background-color: #0056b3;
+}
+
+.difficulty-button:active {
+    background-color: #003f7f;
+}

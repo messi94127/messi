@@ -42,6 +42,24 @@ let enemySpeedMultiplier = 1; // 敵スピードの倍率デフォルト
 const startMessage = document.getElementById('startMessage');
 let isGameStarted = false;
 
+const difficultySettings = {
+    easy: {
+        enemySpacing: 500,
+        enemySpeedMultiplier: 0.5,
+        label: '低 (Easy)',
+    },
+    medium: {
+        enemySpacing: 300,
+        enemySpeedMultiplier: 0.6,
+        label: '中 (Medium)',
+    },
+    hard: {
+        enemySpacing: 150,
+        enemySpeedMultiplier: 0.7,
+        label: '高 (Hard)',
+    },
+};
+
 // // メッセージをクリックまたはキー押下で非表示にしてゲーム開始
 // startMessage.addEventListener('click', hideStartMessageAndStartGame);
 // document.addEventListener('keydown', hideStartMessageAndStartGame);
@@ -51,48 +69,149 @@ window.onload = () => {
     showStartMessage();
 };
 
+document.addEventListener('keydown', (event) => {
+    console.log(`Key pressed: ${event.key}`);
+    handleDifficultySelection(event);
+});
+
+document.addEventListener('touchstart', (event) => {
+    console.log('Touch detected');
+    handleTouchDifficultySelection(event);
+});
+
 // イベントリスナーの追加方法を変更 (touchstart、touchmove、touchendをgame要素に直接追加)
 game.addEventListener('touchstart', handleTouchStart, { passive: false });
 game.addEventListener('touchmove', handleTouchMove, { passive: false });
 game.addEventListener('touchend', handleTouchEnd, { passive: false });
 
-// メッセージを表示する関数
 function showStartMessage() {
-    startMessage.classList.add('visible');
-    // 難易度選択ボタンのイベントリスナーを登録
-    document.getElementById('easyButton').addEventListener('click', () => selectDifficulty('easy'));
-    document.getElementById('mediumButton').addEventListener('click', () => selectDifficulty('medium'));
-    document.getElementById('hardButton').addEventListener('click', () => selectDifficulty('hard'));
-}
-function selectDifficulty(selectedDifficulty) {
-    difficulty = selectedDifficulty;
-
-    switch (difficulty) {
-        case 'easy':
-            enemySpacing = 500; // 敵の間隔を広げる
-            enemySpeedMultiplier = 0.3; // 敵のスピードを低下
-            break;
-        case 'medium':
-            enemySpacing = 300; // デフォルトの間隔
-            enemySpeedMultiplier = 0.5; // デフォルトのスピード
-            break;
-        case 'hard':
-            enemySpacing = 150; // 敵の間隔を狭くする
-            enemySpeedMultiplier = 1.0; // 敵のスピードを速く
-            break;
+    const startMessage = document.getElementById('startMessage');
+    if (!startMessage) {
+        console.error('startMessage element not found');
+        return;
     }
 
-    // ゲームを開始
-    hideStartMessageAndStartGame();
+    startMessage.classList.add('visible');
+    startMessage.innerHTML = `
+        <p>ようこそ！ゲームの難易度を選択してください...</p>
+        <div id="difficulty-buttons">
+            <button id="easyButton" class="difficulty-button">1: 低 (Easy)</button>
+            <button id="mediumButton" class="difficulty-button">2: 中 (Medium)</button>
+            <button id="hardButton" class="difficulty-button">3: 高 (Hard)</button>
+        </div>
+    `;
+
+    // 各ボタンにクリックとタッチイベントリスナーを登録
+    const addButtonEvent = (buttonId, difficulty) => {
+        const button = document.getElementById(buttonId);
+        button.addEventListener('click', () => startGameWithDifficulty(difficulty));
+        button.addEventListener('touchstart', () => startGameWithDifficulty(difficulty));
+    };
+
+    addButtonEvent('easyButton', 'easy');
+    addButtonEvent('mediumButton', 'medium');
+    addButtonEvent('hardButton', 'hard');
+}
+// function selectDifficulty(selectedDifficulty) {
+//     difficulty = selectedDifficulty;
+
+//     switch (difficulty) {
+//         case 'easy':
+//             enemySpacing = 500; // 敵の間隔を広げる
+//             enemySpeedMultiplier = 0.3; // 敵のスピードを低下
+//             break;
+//         case 'medium':
+//             enemySpacing = 300; // デフォルトの間隔
+//             enemySpeedMultiplier = 0.5; // デフォルトのスピード
+//             break;
+//         case 'hard':
+//             enemySpacing = 150; // 敵の間隔を狭くする
+//             enemySpeedMultiplier = 1.0; // 敵のスピードを速く
+//             break;
+//     }
+
+//     // ゲームを開始
+//     hideStartMessageAndStartGame();
+// }
+function applyDifficulty(difficultyKey) {
+    const settings = difficultySettings[difficultyKey];
+    if (!settings) {
+        console.error('無効な難易度設定:', difficultyKey);
+        return;
+    }
+
+    // 設定を適用
+    enemySpacing = settings.enemySpacing;
+    enemySpeedMultiplier = settings.enemySpeedMultiplier;
+
+    console.log(`難易度設定: ${settings.label}`);
+}
+
+function handleDifficultySelection(event) {
+    if (isGameStarted) return;
+
+    let difficultyKey;
+    switch (event.key) {
+        case '1':
+            difficultyKey = 'easy';
+            break;
+        case '2':
+            difficultyKey = 'medium';
+            break;
+        case '3':
+            difficultyKey = 'hard';
+            break;
+        default:
+            return;
+    }
+
+    startGameWithDifficulty(difficultyKey);
+}
+
+function handleTouchDifficultySelection(event) {
+    if (isGameStarted) return;
+
+    const touchX = event.touches[0].clientX;
+    const screenWidth = window.innerWidth;
+
+    let difficultyKey;
+    if (touchX < screenWidth / 3) {
+        difficultyKey = 'easy';
+    } else if (touchX < (screenWidth * 2) / 3) {
+        difficultyKey = 'medium';
+    } else {
+        difficultyKey = 'hard';
+    }
+
+    startGameWithDifficulty(difficultyKey);
+}
+
+function startGameWithDifficulty(difficultyKey) {
+    console.log(`Start game with difficulty: ${difficultyKey}`); // デバッグログ
+    applyDifficulty(difficultyKey); // 難易度設定を適用
+    displaySelectedDifficulty(difficultyKey); // 選択された難易度を表示
+
+    setTimeout(() => {
+        hideStartMessageAndStartGame(); // ゲームを開始
+    }, 1000);
+}
+
+function displaySelectedDifficulty(difficultyKey) {
+    const settings = difficultySettings[difficultyKey];
+    const startMessage = document.getElementById('startMessage');
+
+    startMessage.innerHTML = `<p>選択された難易度: <span class="highlight">${settings.label}</span></p>`;
+    startMessage.classList.add('fadeOut');
 }
 
 // メッセージを非表示にしてゲームを開始する関数
 function hideStartMessageAndStartGame() {
-    if (isGameStarted) return; // ゲームが既に開始されている場合は何もしない
-    isGameStarted = true;
-    startMessage.classList.remove('visible');
+    if (isGameStarted) return;
+    isGameStarted = true; // ゲーム開始フラグを設定
+    console.log('Game is starting...'); // デバッグ用ログ
+    startMessage.classList.remove('visible'); // メッセージを非表示
     resetGame();
-    gameLoop();
+    requestAnimationFrame(gameLoop); // ゲームループを開始
 }
 
 
@@ -601,6 +720,7 @@ function stopOtherAudio(currentAudio) {
 }
 
 function gameLoop() {
+    console.log('Game loop running'); // デバッグ用ログ
     if (!isGameStarted) {
         // ゲームが開始されていない間は、次のフレームを待機
         // requestAnimationFrame(gameLoop);
