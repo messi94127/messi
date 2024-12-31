@@ -45,17 +45,17 @@ let isGameStarted = false;
 const difficultySettings = {
     easy: {
         enemySpacing: 500,
-        enemySpeedMultiplier: 0.5,
+        enemySpeedMultiplier: 0.4,
         label: '低 (Easy)',
     },
     medium: {
         enemySpacing: 300,
-        enemySpeedMultiplier: 0.6,
+        enemySpeedMultiplier: 0.45,
         label: '中 (Medium)',
     },
     hard: {
         enemySpacing: 200,
-        enemySpeedMultiplier: 0.7,
+        enemySpeedMultiplier: 0.5,
         label: '高 (Hard)',
     },
 };
