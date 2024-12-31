@@ -35,13 +35,16 @@ const touchControls = {
 
 let touchStartY = null;
 
+let enemySpacing = 300; // 敵の間隔デフォルト
+let enemySpeedMultiplier = 1; // 敵スピードの倍率デフォルト
+
 // ゲーム開始メッセージを管理
 const startMessage = document.getElementById('startMessage');
 let isGameStarted = false;
 
-// メッセージをクリックまたはキー押下で非表示にしてゲーム開始
-startMessage.addEventListener('click', hideStartMessageAndStartGame);
-document.addEventListener('keydown', hideStartMessageAndStartGame);
+// // メッセージをクリックまたはキー押下で非表示にしてゲーム開始
+// startMessage.addEventListener('click', hideStartMessageAndStartGame);
+// document.addEventListener('keydown', hideStartMessageAndStartGame);
 
 // ゲームロード時に開始メッセージを表示
 window.onload = () => {
@@ -56,6 +59,31 @@ game.addEventListener('touchend', handleTouchEnd, { passive: false });
 // メッセージを表示する関数
 function showStartMessage() {
     startMessage.classList.add('visible');
+    // 難易度選択ボタンのイベントリスナーを登録
+    document.getElementById('easyButton').addEventListener('click', () => selectDifficulty('easy'));
+    document.getElementById('mediumButton').addEventListener('click', () => selectDifficulty('medium'));
+    document.getElementById('hardButton').addEventListener('click', () => selectDifficulty('hard'));
+}
+function selectDifficulty(selectedDifficulty) {
+    difficulty = selectedDifficulty;
+
+    switch (difficulty) {
+        case 'easy':
+            enemySpacing = 500; // 敵の間隔を広げる
+            enemySpeedMultiplier = 0.3; // 敵のスピードを低下
+            break;
+        case 'medium':
+            enemySpacing = 300; // デフォルトの間隔
+            enemySpeedMultiplier = 0.5; // デフォルトのスピード
+            break;
+        case 'hard':
+            enemySpacing = 150; // 敵の間隔を狭くする
+            enemySpeedMultiplier = 1.0; // 敵のスピードを速く
+            break;
+    }
+
+    // ゲームを開始
+    hideStartMessageAndStartGame();
 }
 
 // メッセージを非表示にしてゲームを開始する関数
@@ -340,7 +368,7 @@ class FastEnemy extends GameObject {
         element.style.bottom = `${y}px`;
         enemyContainer.appendChild(element);
         super(x, y, 50, 50, element);
-        this.speed = 8;
+        this.speed = 16 * enemySpeedMultiplier;
     }
     move() {
         this.x -= this.speed;
@@ -362,7 +390,7 @@ class Enemy extends GameObject {
         this.speed = 10;
     }
     move() {
-        this.x -= playerSpeed * backgroundSpeed;
+        this.x -= playerSpeed * enemySpeedMultiplier;
         this.element.style.left = `${this.x}px`;
         if (this.x < -100) {
             this.x = game.offsetWidth + Math.random() * 500;
@@ -406,7 +434,7 @@ class JumpingEnemy extends GameObject {
         }
 
         // 左方向への移動
-        this.x -= playerSpeed * backgroundSpeed;
+        this.x -= playerSpeed * enemySpeedMultiplier;
         if (this.x < -100) {
             this.x = game.offsetWidth + Math.random() * 500; // 再配置
         }
@@ -490,7 +518,7 @@ class RandomMovingEnemy extends GameObject {
 
 function createEnemies() {
     for (let i = 0; i < numEnemies; i++) {
-        const x = 800 + i * 300; // 敵の間隔を 500 から 300 に変更
+        const x = 800 + i * enemySpacing; // 敵の間隔を 難易度によって変更
         const enemyType = Math.random();
         if (enemyType < 0.25) {
             enemies.push(new Enemy(x, 100));
