@@ -789,7 +789,11 @@ function checkXOverlap(playerRect, enemyRect) {
     const playerCenterX = playerRect.left + playerRect.width / 2;
     const enemyCenterX = enemyRect.left + enemyRect.width / 2;
     const overlapWidth = (playerRect.width + enemyRect.width) / 2;
-    return Math.abs(playerCenterX - enemyCenterX) < overlapWidth * 0.8;//0.8は重なり具合の調整
+
+    // 高速な敵ほど余裕を持たせる
+    const overlapThreshold = (enemyRect.speed && enemyRect.speed > 10) ? 0.9 : 0.8;
+
+    return Math.abs(playerCenterX - enemyCenterX) < overlapWidth * overlapThreshold;
 }
 function stopOtherAudio(currentAudio) {
     const allAudioElements = document.querySelectorAll('audio');
@@ -971,9 +975,9 @@ function gameLoop() {
         const jumpOnEnemySound = document.getElementById('jumpOnEnemySound');
 
         if (checkXOverlap(playerRect, enemyRect) &&
-            playerRect.bottom >= enemyRect.top - 10 &&
-            playerRect.bottom <= enemyRect.top + 10 &&
-            velocityY > 0) {
+            playerRect.bottom >= enemyRect.top - Math.abs(velocityY * 1.5) && // プレイヤーの底面が敵の上面に近い (速度依存の範囲)
+            playerRect.bottom <= enemyRect.top + Math.abs(velocityY * 1.5) && // 許容範囲内 (速度依存の範囲)
+            velocityY > -10) {
             score += enemyObj.scoreValue;
             scoreDisplay.textContent = `Score: ${score}`;
             enemiesToRemove.push(enemyObj);
