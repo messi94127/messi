@@ -496,6 +496,7 @@ class FastEnemy extends GameObject {
         enemyContainer.appendChild(element);
         super(x, y, 50, 50, element);
         this.speed = 16 * enemySpeedMultiplier;
+        this.scoreValue = 100; // この敵を倒したときに加算するスコア
     }
     move() {
         this.x -= this.speed;
@@ -515,6 +516,7 @@ class Enemy extends GameObject {
         enemyContainer.appendChild(element);
         super(x, y, 50, 50, element); // 親クラスのコンストラクタを呼び出す
         this.speed = 10;
+        this.scoreValue = 50; // この敵を倒したときに加算するスコア
     }
     move() {
         this.x -= playerSpeed * enemySpeedMultiplier;
@@ -539,6 +541,7 @@ class JumpingEnemy extends GameObject {
         this.gravity = 1.5;
         this.velocityY = 0;
         this.groundY = y; // 初期の地面の高さ
+        this.scoreValue = 200; // この敵を倒したときに加算するスコア
     }
 
     move() {
@@ -607,6 +610,7 @@ class RandomMovingEnemy extends GameObject {
 
         this.boundX = game.offsetWidth; // 水平方向の制限
         this.boundY = 300; // 垂直方向の制限
+        this.scoreValue = 1000; // この敵を倒したときに加算するスコア
     }
 
     move() {
@@ -855,7 +859,7 @@ function gameLoop() {
             playerRect.bottom >= enemyRect.top - 10 &&
             playerRect.bottom <= enemyRect.top + 10 &&
             velocityY > 0) {
-            score += 100;
+            score += enemyObj.scoreValue;
             scoreDisplay.textContent = `Score: ${score}`;
             enemiesToRemove.push(enemyObj);
 
