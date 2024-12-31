@@ -275,3 +275,57 @@ body {
         transform: scale(1.2);
     }
 }
+
+/* ハイスコアセクション全体のスタイル */
+#highScoresSection {
+    text-align: center;
+    margin: 20px auto;
+    max-width: 400px;
+    padding: 20px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* セクションタイトルのスタイル */
+#highScoresSection h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+/* スコアリストのスタイル */
+#highScoreList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* 各スコア項目のスタイル */
+#highScoreList li {
+    font-size: 18px;
+    margin: 8px 0;
+    padding: 5px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* 順位の色分け */
+#highScoreList li:nth-child(1) {
+    background-color: gold;
+    font-weight: bold;
+    color: white;
+}
+#highScoreList li:nth-child(2) {
+    background-color: silver;
+    font-weight: bold;
+    color: white;
+}
+#highScoreList li:nth-child(3) {
+    background-color: #cd7f32; /* ブロンズ */
+    font-weight: bold;
+    color: white;
+}

@@ -800,6 +800,43 @@ function stopOtherAudio(currentAudio) {
     });
 }
 
+async function submitHighScore(username, score) {
+    const data = { username, score };
+    await fetch('https://api.github.com/repos/messi94127/messi/contents/highscores.json', {
+        method: 'PUT',
+        headers: {
+            'Authorization': `token YOUR_PERSONAL_ACCESS_TOKEN`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            message: 'Update high scores',
+            content: btoa(JSON.stringify(data)), // Base64エンコード
+            sha: CURRENT_FILE_SHA // 現在のファイルSHAを取得して使用
+        })
+    });
+}
+async function fetchHighScores() {
+    const response = await fetch('https://raw.githubusercontent.com/messi94127/messi/main/highscores.json');
+    if (response.ok) {
+        const highScores = await response.json();
+        displayHighScores(highScores);
+    } else {
+        console.error("ハイスコアの取得に失敗しました");
+    }
+}
+function displayHighScores(highScores) {
+    const scoreList = document.getElementById('highScoreList');
+    scoreList.innerHTML = '';
+    highScores.forEach((score, index) => {
+        const listItem = document.createElement('li');
+        listItem.textContent = `${index + 1}. ${score.username}: ${score.score}`;
+        scoreList.appendChild(listItem);
+    });
+}
+
+// ページロード時にハイスコアを取得して表示
+fetchHighScores();
+
 function gameLoop() {
     console.log('Game loop running'); // デバッグ用ログ
     if (!isGameStarted) {
