@@ -588,41 +588,52 @@ class RandomMovingEnemy extends GameObject {
         // 左方向の基準速度
         this.baseSpeedX = -2; // 左方向への基準速度
 
-        // 横方向ランダム速度
+        // 横方向ランダム速度を初期値として設定
         const maxRandomSpeedX = 0.2; // 横方向ランダム速度の上限
-        this.randomSpeedX = Math.max(Math.min((Math.random() - 0.5) * 0.4, maxRandomSpeedX), -maxRandomSpeedX); // -0.2 ～ +0.2
+        this.randomSpeedX = Math.max(Math.min((Math.random() - 0.5) * 0.4, maxRandomSpeedX), -maxRandomSpeedX);
 
-        // 下方向の確率を大幅に増やす
-        const downProbability = 0.9; // 下に動く確率（90%）
-        const maxRandomSpeedY = 0.5; // 縦方向ランダム速度の上限
+        // 縦方向の速度（縦移動が小さくなりすぎないように制御）
+        const downProbability = 0.5; // 下に動く確率（95%に設定）
+        const maxRandomSpeedY = 1.0; // 縦方向ランダム速度の上限（値を増加）
+        const minSpeedY = 0.5; // 縦方向ランダム速度の最低値（絶対値を増加）
 
         if (Math.random() < downProbability) {
-            this.speedY = -Math.random() * maxRandomSpeedY; // 下方向への速度
+            // 下方向への速度（最低値以上に設定）
+            this.speedY = -Math.max(Math.random() * maxRandomSpeedY, minSpeedY);
         } else {
-            this.speedY = Math.random() * (maxRandomSpeedY / 4); // 上方向の速度を半分に制限
+            // 上方向の速度（最低値以上に設定）
+            this.speedY = Math.max(Math.random() * maxRandomSpeedY, minSpeedY);
         }
 
-        // ジャンプの高さと確率（調整）
+        // 縦方向の速度が小さすぎないか最終確認
+        if (Math.abs(this.speedY) < minSpeedY) {
+            this.speedY = this.speedY > 0 ? minSpeedY : -minSpeedY; // 最小速度を適用
+        }
+
+        // ジャンプの高さと確率を初期値として設定
         const minJumpHeight = 5; // ジャンプ高さの下限
         const maxJumpHeight = 8; // ジャンプ高さの上限
-        this.jumpHeight = Math.random() * (maxJumpHeight - minJumpHeight - 1) + minJumpHeight; // 高さは 5 ～ 10
-        this.jumpProbability = Math.random() * 0.05; // 確率は 5%（減少）
+        this.jumpHeight = Math.random() * (maxJumpHeight - minJumpHeight) + minJumpHeight;
+        this.jumpProbability = Math.random() * 0.02; // ジャンプ確率をさらに減少
 
+        // 制限値
         this.boundX = game.offsetWidth; // 水平方向の制限
         this.boundY = 300; // 垂直方向の制限
-        this.scoreValue = 1000; // この敵を倒したときに加算するスコア
+
+        // 倒したときのスコア
+        this.scoreValue = 1000;
     }
 
     move() {
-        // 左方向の基準速度にランダム成分を加えて移動
+        // 左方向の基準速度にランダム成分を加えて移動（固定された初期値のみ使用）
         this.x += this.baseSpeedX + this.randomSpeedX;
 
-        // 縦方向の移動
+        // 縦方向の移動（固定された初期値のみ使用）
         this.y += this.speedY;
 
-        // 初期設定された確率でジャンプ
+        // 初期設定された確率でジャンプ（固定された初期値を使用）
         if (Math.random() < this.jumpProbability) {
-            this.speedY = this.jumpHeight; // 初期設定されたジャンプ高さ
+            this.speedY = this.jumpHeight;
         }
 
         // 画面端で反転（必要に応じて調整）
@@ -642,11 +653,6 @@ class RandomMovingEnemy extends GameObject {
         return false;
     }
 }
-
-
-
-
-
 function createEnemies() {
     for (let i = 0; i < numEnemies; i++) {
         const x = 800 + i * enemySpacing; // 敵の間隔を 難易度によって変更

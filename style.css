@@ -24,7 +24,7 @@ body {
 #player {
     position: absolute;
     width: 50px;
-    height: 100px;
+    height: 80px;
     background-image: url('goku2.jpg');
     background-size: cover;
     background-position: center bottom;
