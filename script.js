@@ -187,12 +187,12 @@ function handleTouchDifficultySelection(event) {
 }
 
 function startGameWithDifficulty(difficultyKey) {
-    console.log(`Start game with difficulty: ${difficultyKey}`); // デバッグログ
+    console.log(`Start game with difficulty: ${difficultyKey}`); // デバッグ用
     applyDifficulty(difficultyKey); // 難易度設定を適用
     displaySelectedDifficulty(difficultyKey); // 選択された難易度を表示
 
     setTimeout(() => {
-        hideStartMessageAndStartGame(); // ゲームを開始
+        hideStartMessageAndStartGame(); // メッセージを削除してゲームを開始
     }, 1000);
 }
 
@@ -207,11 +207,19 @@ function displaySelectedDifficulty(difficultyKey) {
 // メッセージを非表示にしてゲームを開始する関数
 function hideStartMessageAndStartGame() {
     if (isGameStarted) return;
-    isGameStarted = true; // ゲーム開始フラグを設定
-    console.log('Game is starting...'); // デバッグ用ログ
-    startMessage.classList.remove('visible'); // メッセージを非表示
+    isGameStarted = true;
+
+    const startMessage = document.getElementById('startMessage');
+    if (startMessage) {
+        console.log('Removing start message...'); // デバッグ用ログ
+        startMessage.classList.remove('visible');
+        startMessage.remove(); // DOMから完全に削除
+    } else {
+        console.error('Start message element not found');
+    }
+
     resetGame();
-    requestAnimationFrame(gameLoop); // ゲームループを開始
+    requestAnimationFrame(gameLoop);
 }
 
 
