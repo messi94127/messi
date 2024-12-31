@@ -985,7 +985,7 @@ function gameLoop() {
             // 効果音を再生
             jumpOnEnemySound.currentTime = 0; // 再生位置をリセット
             jumpOnEnemySound.play();
-            velocityY = -15;
+            velocityY = -20;
             if (isInvincible) {
                 break;
             }
