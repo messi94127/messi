@@ -389,17 +389,60 @@ class JumpingEnemy extends GameObject {
     }
 }
 
+class RandomMovingEnemy extends GameObject {
+    constructor(x, y) {
+        const element = document.createElement('div');
+        element.classList.add('enemy', 'random-moving-enemy');
+        element.style.position = 'absolute';
+        element.style.left = `${x}px`;
+        element.style.bottom = `${y}px`;
+        enemyContainer.appendChild(element);
+        super(x, y, 50, 50, element);
+
+        this.speedX = (Math.random() - 0.5) * 10;
+        this.speedY = (Math.random() - 0.5) * 10;
+        this.boundX = game.offsetWidth;
+        this.boundY = 400;
+    }
+
+    move() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+
+        if (Math.random() < 0.02) {
+            this.speedY = 15;
+        }
+
+        if (this.x < 0 || this.x > this.boundX) {
+            this.speedX = -this.speedX;
+        }
+        if (this.y < 0 || this.y > this.boundY) {
+            this.speedY = -this.speedY;
+        }
+
+        if (Math.random() < 0.01) {
+            this.speedX = (Math.random() - 0.5) * 10;
+            this.speedY = (Math.random() - 0.5) * 10;
+        }
+
+        this.element.style.left = `${this.x}px`;
+        this.element.style.bottom = `${this.y}px`;
+    }
+}
+
 
 function createEnemies() {
     for (let i = 0; i < numEnemies; i++) {
         const x = 800 + i * 300; // 敵の間隔を 500 から 300 に変更
         const enemyType = Math.random();
-        if (enemyType < 0.3) {
+        if (enemyType < 0.25) {
             enemies.push(new Enemy(x, 100));
-        } else if (enemyType < 0.6) {
+        } else if (enemyType < 0.5) {
             enemies.push(new FastEnemy(x, 100));
-        } else if (enemyType < 0.9) {
+        } else if (enemyType < 0.75) {
             enemies.push(new JumpingEnemy(x, 100));
+        } else if (enemyType < 0.9) {
+            enemies.push(new RandomMovingEnemy(x, Math.random() * 400));
         } else {
             enemies.push(new InvincibleItem(x, 100)); // 無敵アイテムを少量追加
         }
