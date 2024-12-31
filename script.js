@@ -399,36 +399,48 @@ class RandomMovingEnemy extends GameObject {
         enemyContainer.appendChild(element);
         super(x, y, 50, 50, element);
 
-        this.speedX = (Math.random() - 0.5) * 10;
-        this.speedY = (Math.random() - 0.5) * 10;
-        this.boundX = game.offsetWidth;
-        this.boundY = 400;
+        // 初期速度をランダムに設定（左方向を基準とする）
+        this.baseSpeedX = -5; // 左方向への基準速度
+        this.randomSpeedX = (Math.random() - 0.5) * 2; // -1 ～ +1 のランダム速度
+        this.speedY = (Math.random() - 0.5) * 10; // -5 ～ +5 のランダム速度
+
+        // 初期化時にジャンプの高さと確率をランダムに設定
+        const maxJumpHeight = 25; // ジャンプ高さの上限
+        this.jumpHeight = Math.min(Math.random() * 20 + 10, maxJumpHeight); // 最大 25、高さは 10 ～ 25
+        this.jumpProbability = Math.random() * 0.1; // 0 ～ 10% の確率でジャンプ
+
+        this.boundX = game.offsetWidth; // 水平方向の制限
+        this.boundY = 400; // 垂直方向の制限
     }
 
     move() {
-        this.x += this.speedX;
+        // 左方向の基準速度にランダム成分を加えて移動
+        this.x += this.baseSpeedX + this.randomSpeedX;
         this.y += this.speedY;
 
-        if (Math.random() < 0.02) {
-            this.speedY = 15;
+        // 初期設定された確率でジャンプ
+        if (Math.random() < this.jumpProbability) {
+            this.speedY = this.jumpHeight; // 初期設定されたジャンプ高さ
         }
 
-        if (this.x < 0 || this.x > this.boundX) {
-            this.speedX = -this.speedX;
-        }
+        // 画面端で反転（必要に応じて調整）
         if (this.y < 0 || this.y > this.boundY) {
-            this.speedY = -this.speedY;
+            this.speedY = -this.speedY; // 垂直方向の反転
         }
 
-        if (Math.random() < 0.01) {
-            this.speedX = (Math.random() - 0.5) * 10;
-            this.speedY = (Math.random() - 0.5) * 10;
-        }
-
+        // DOM に反映
         this.element.style.left = `${this.x}px`;
         this.element.style.bottom = `${this.y}px`;
+
+        // 画面外に出たら削除フラグを返す
+        if (this.x < -50) { // 画面外に出たら削除（左端）
+            this.element.remove();
+            return true; // 削除フラグ
+        }
+        return false;
     }
 }
+
 
 
 function createEnemies() {
