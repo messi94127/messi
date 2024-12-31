@@ -399,18 +399,23 @@ class RandomMovingEnemy extends GameObject {
         enemyContainer.appendChild(element);
         super(x, y, 50, 50, element);
 
-        // 初期速度をランダムに設定（左方向を基準とする）
-        this.baseSpeedX = -5; // 左方向への基準速度
-        this.randomSpeedX = (Math.random() - 0.5) * 2; // -1 ～ +1 のランダム速度
-        this.speedY = (Math.random() - 0.5) * 10; // -5 ～ +5 のランダム速度
+        // 左方向の基準速度（ゆっくりに設定）
+        this.baseSpeedX = -2; // 左方向への基準速度
 
-        // 初期化時にジャンプの高さと確率をランダムに設定
-        const maxJumpHeight = 25; // ジャンプ高さの上限
-        this.jumpHeight = Math.min(Math.random() * 20 + 10, maxJumpHeight); // 最大 25、高さは 10 ～ 25
-        this.jumpProbability = Math.random() * 0.1; // 0 ～ 10% の確率でジャンプ
+        // ランダム速度（ゆっくり）
+        const maxRandomSpeedX = 0.2; // 横方向ランダム速度の上限
+        const maxRandomSpeedY = 0.5; // 縦方向ランダム速度の上限
+        this.randomSpeedX = Math.max(Math.min((Math.random() - 0.5) * 0.4, maxRandomSpeedX), -maxRandomSpeedX); // -0.2 ～ +0.2
+        this.speedY = Math.max(Math.min((Math.random() - 0.5) * 1, maxRandomSpeedY), -maxRandomSpeedY); // -0.5 ～ +0.5
+
+        // ジャンプの高さと確率（変化を持たせる）
+        const minJumpHeight = 0; // ジャンプ高さの下限
+        const maxJumpHeight = 15; // ジャンプ高さの上限
+        this.jumpHeight = Math.random() * (maxJumpHeight - minJumpHeight) + minJumpHeight; // 高さは 5 ～ 15
+        this.jumpProbability = Math.random() * 0.1 + 0.05; // 確率は 5% ～ 15%
 
         this.boundX = game.offsetWidth; // 水平方向の制限
-        this.boundY = 400; // 垂直方向の制限
+        this.boundY = 300; // 垂直方向の制限
     }
 
     move() {
@@ -440,6 +445,7 @@ class RandomMovingEnemy extends GameObject {
         return false;
     }
 }
+
 
 
 
