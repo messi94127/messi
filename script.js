@@ -35,10 +35,38 @@ const touchControls = {
 
 let touchStartY = null;
 
+// ゲーム開始メッセージを管理
+const startMessage = document.getElementById('startMessage');
+let isGameStarted = false;
+
+// メッセージをクリックまたはキー押下で非表示にしてゲーム開始
+startMessage.addEventListener('click', hideStartMessageAndStartGame);
+document.addEventListener('keydown', hideStartMessageAndStartGame);
+
+// ゲームロード時に開始メッセージを表示
+window.onload = () => {
+    showStartMessage();
+};
+
 // イベントリスナーの追加方法を変更 (touchstart、touchmove、touchendをgame要素に直接追加)
 game.addEventListener('touchstart', handleTouchStart, { passive: false });
 game.addEventListener('touchmove', handleTouchMove, { passive: false });
 game.addEventListener('touchend', handleTouchEnd, { passive: false });
+
+// メッセージを表示する関数
+function showStartMessage() {
+    startMessage.classList.add('visible');
+}
+
+// メッセージを非表示にしてゲームを開始する関数
+function hideStartMessageAndStartGame() {
+    if (isGameStarted) return; // ゲームが既に開始されている場合は何もしない
+    isGameStarted = true;
+    startMessage.classList.remove('visible');
+    resetGame();
+    gameLoop();
+}
+
 
 function handleTouchStart(e) {
     e.preventDefault();
@@ -399,20 +427,28 @@ class RandomMovingEnemy extends GameObject {
         enemyContainer.appendChild(element);
         super(x, y, 50, 50, element);
 
-        // 左方向の基準速度（ゆっくりに設定）
+        // 左方向の基準速度
         this.baseSpeedX = -2; // 左方向への基準速度
 
-        // ランダム速度（ゆっくり）
+        // 横方向ランダム速度
         const maxRandomSpeedX = 0.2; // 横方向ランダム速度の上限
-        const maxRandomSpeedY = 0.5; // 縦方向ランダム速度の上限
         this.randomSpeedX = Math.max(Math.min((Math.random() - 0.5) * 0.4, maxRandomSpeedX), -maxRandomSpeedX); // -0.2 ～ +0.2
-        this.speedY = Math.max(Math.min((Math.random() - 0.5) * 1, maxRandomSpeedY), -maxRandomSpeedY); // -0.5 ～ +0.5
 
-        // ジャンプの高さと確率（変化を持たせる）
-        const minJumpHeight = 0; // ジャンプ高さの下限
-        const maxJumpHeight = 15; // ジャンプ高さの上限
-        this.jumpHeight = Math.random() * (maxJumpHeight - minJumpHeight) + minJumpHeight; // 高さは 5 ～ 15
-        this.jumpProbability = Math.random() * 0.1 + 0.05; // 確率は 5% ～ 15%
+        // 下方向の確率を大幅に増やす
+        const downProbability = 0.9; // 下に動く確率（90%）
+        const maxRandomSpeedY = 0.5; // 縦方向ランダム速度の上限
+
+        if (Math.random() < downProbability) {
+            this.speedY = -Math.random() * maxRandomSpeedY; // 下方向への速度
+        } else {
+            this.speedY = Math.random() * (maxRandomSpeedY / 4); // 上方向の速度を半分に制限
+        }
+
+        // ジャンプの高さと確率（調整）
+        const minJumpHeight = 5; // ジャンプ高さの下限
+        const maxJumpHeight = 8; // ジャンプ高さの上限
+        this.jumpHeight = Math.random() * (maxJumpHeight - minJumpHeight - 1) + minJumpHeight; // 高さは 5 ～ 10
+        this.jumpProbability = Math.random() * 0.05; // 確率は 5%（減少）
 
         this.boundX = game.offsetWidth; // 水平方向の制限
         this.boundY = 300; // 垂直方向の制限
@@ -421,6 +457,8 @@ class RandomMovingEnemy extends GameObject {
     move() {
         // 左方向の基準速度にランダム成分を加えて移動
         this.x += this.baseSpeedX + this.randomSpeedX;
+
+        // 縦方向の移動
         this.y += this.speedY;
 
         // 初期設定された確率でジャンプ
@@ -445,6 +483,7 @@ class RandomMovingEnemy extends GameObject {
         return false;
     }
 }
+
 
 
 
@@ -534,6 +573,11 @@ function stopOtherAudio(currentAudio) {
 }
 
 function gameLoop() {
+    if (!isGameStarted) {
+        // ゲームが開始されていない間は、次のフレームを待機
+        // requestAnimationFrame(gameLoop);
+        return;
+    }
     if (isJumping) {
         velocityY += gravity;
         playerPosition.bottom -= velocityY;
