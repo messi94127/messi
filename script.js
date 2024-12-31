@@ -392,7 +392,7 @@ class JumpingEnemy extends GameObject {
 
 function createEnemies() {
     for (let i = 0; i < numEnemies; i++) {
-        const x = 800 + i * 500;
+        const x = 800 + i * 300; // 敵の間隔を 500 から 300 に変更
         const enemyType = Math.random();
         if (enemyType < 0.3) {
             enemies.push(new Enemy(x, 100));
