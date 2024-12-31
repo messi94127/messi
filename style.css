@@ -329,13 +329,3 @@ body {
     font-weight: bold;
     color: white;
 }
-@media (max-width: 768px) {
-    #player, .enemy {
-        width: 40px;
-        height: 60px;
-    }
-    .difficulty-button {
-        font-size: 14px;
-        padding: 8px 16px;
-    }
-}
