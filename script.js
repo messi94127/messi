@@ -618,7 +618,7 @@ class RandomMovingEnemy extends GameObject {
         super(x, y, 50, 50, element);
 
         // 高さ制限を変更
-        this.boundY = 400; // 高さの上限を200に設定
+        this.boundY = 300; // 高さの上限を200に設定
 
         // 初期位置を上限内に収める
         this.y = Math.min(y, this.boundY);
