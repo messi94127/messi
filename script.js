@@ -584,7 +584,7 @@ class JumpingEnemy extends GameObject {
         // ジャンプロジック
         if (!this.isJumping) {
             this.isJumping = true;
-            this.velocityY = -25; // ジャンプ初速度
+            this.velocityY = -24; // ジャンプ初速度
         }
 
         if (this.isJumping) {
@@ -841,9 +841,9 @@ function resetGameExceptPlayer() {
     const currentLeft = playerPosition.left;
     const currentBottom = playerPosition.bottom;
 
-    // スコアをリセット
-    score = 0;
-    scoreDisplay.textContent = `Score: ${score}`;
+    // // スコアをリセット
+    // score = 0;
+    // scoreDisplay.textContent = `Score: ${score}`;
 
     // キーやタッチ操作のリセット
     for (const key in keys) {
@@ -858,8 +858,6 @@ function resetGameExceptPlayer() {
     playerPosition.left = currentLeft;
     playerPosition.bottom = currentBottom;
     updatePositions(); // 保存された位置を画面に反映
-
-    console.log("ゲーム状態をリセットしましたが、敵は維持されています。");
 }
 
 
