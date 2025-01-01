@@ -6,6 +6,8 @@ const goal = document.getElementById('goal');
 const scoreDisplay = document.getElementById('score');
 
 let isJumping = false;
+let jumpCount = 0; // 現在のジャンプ回数
+const maxJumps = 2; // 最大ジャンプ回数（2段ジャンプ）
 let isInvincible = false;
 let gravity = 1.5;
 let velocityY = 0;
@@ -299,9 +301,10 @@ function handleTouchEnd(e) {
 
 // キーボードイベントリスナー
 document.addEventListener('keydown', (e) => {
-    if (e.code === 'Space' && !isJumping) {
+    if (e.code === 'Space' && jumpCount < maxJumps) {
         isJumping = true;
-        velocityY = -20;
+        velocityY = -20; // ジャンプ力
+        jumpCount++; // ジャンプ回数を増加
     }
     keys[e.code] = true;
 });
@@ -871,6 +874,13 @@ function gameLoop() {
         }
     }
 
+     // 2段ジャンプのエフェクトを適用
+     if (jumpCount === 2) {
+        player.classList.add('double-jumping'); // 見た目を変更
+    } else {
+        player.classList.remove('double-jumping'); // 見た目を元に戻す
+    }
+
     // 移動処理はここに集約
     let playerMoved = false;
     if (keys.ArrowRight || touchControls.isRightPressed) {
@@ -884,6 +894,11 @@ function gameLoop() {
 
     if (playerMoved) {
         moveBackground();
+    }
+    if (playerPosition.bottom <= 100) {
+        playerPosition.bottom = 100;
+        isJumping = false;
+        jumpCount = 0; // ジャンプ回数をリセット
     }
 
     // 敵の移動と火を吐く処理 (Fireオブジェクトの移動処理を追加)

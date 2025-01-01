@@ -329,3 +329,17 @@ body {
     font-weight: bold;
     color: white;
 }
+
+#player.double-jumping {
+    background-image: url('goku2.jpg');
+    animation: doubleJumpEffect 0.5s infinite alternate;
+}
+
+@keyframes doubleJumpEffect {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(1.2);
+    }
+}
