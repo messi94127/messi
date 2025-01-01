@@ -258,9 +258,11 @@ function handleTouchStart(e) {
     touchControls.touchStartX = touch.clientX;
     touchStartY = touch.clientY;
 
-    if (!isJumping) {
+    // ジャンプ処理
+    if (jumpCount < maxJumps) {
         isJumping = true;
-        velocityY = -20;
+        velocityY = -20; // ジャンプ力
+        jumpCount++; // ジャンプ回数を増加
     }
 }
 
@@ -857,6 +859,7 @@ function gameLoop() {
         if (playerPosition.bottom <= 100) {
             playerPosition.bottom = 100;
             isJumping = false;
+            
         }
         const airControl = 0.1;
         if (keys.ArrowRight || touchControls.isRightPressed) {
