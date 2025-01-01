@@ -8,7 +8,8 @@ const scoreDisplay = document.getElementById('score');
 let isJumping = false;
 let jumpCount = 0; // 現在のジャンプ回数
 const maxJumps = 2; // 最大ジャンプ回数（2段ジャンプ）
-let isInvincible = false;
+let isInvincible = false; // 無敵状態かどうかを管理
+let invincibleTimeout;    // 無敵状態のタイマー
 let gravity = 1.5;
 let velocityY = 0;
 let playerPosition = { left: 50, bottom: 100 };
@@ -16,6 +17,8 @@ const playerSpeed = 5;
 
 let enemies = [];
 const numEnemies = 1000;
+
+let hitCount = 0; // プレイヤーが当たった回数を記録
 
 let startTime;
 let score = 0;
@@ -402,6 +405,7 @@ function handleGameClear() { // ゴール時の処理
 updateHighScoreDisplay(); // ページ読み込み時に表示
 
 function resetGame() {
+    hitCount = 0; // ヒットカウンターをリセット
     // プレイヤーの初期位置をリセット
     playerPosition = { left: 50, bottom: 100 };
     isJumping = false;
@@ -751,6 +755,18 @@ class InvincibleItem extends GameObject {
         return false;
     }
 }
+function setInvincible(duration = 2000) {
+    if (isInvincible) return; // すでに無敵なら何もしない
+
+    isInvincible = true; // 無敵状態を有効にする
+    player.classList.add('invincible'); // 見た目の変更（CSSで無敵状態を示す）
+
+    // 指定時間後に無敵を解除
+    invincibleTimeout = setTimeout(() => {
+        isInvincible = false;
+        player.classList.remove('invincible'); // 無敵状態の見た目を元に戻す
+    }, duration);
+}
 function setInvincible(duration = 5000) {
     if (isInvincible) {
         console.log('Already invincible: Extending duration');
@@ -819,6 +835,34 @@ function displayHighScores(highScores) {
         scoreList.appendChild(listItem);
     });
 }
+
+function resetGameExceptPlayer() {
+    // 現在のプレイヤー位置を保持
+    const currentLeft = playerPosition.left;
+    const currentBottom = playerPosition.bottom;
+
+    // スコアをリセット
+    score = 0;
+    scoreDisplay.textContent = `Score: ${score}`;
+
+    // キーやタッチ操作のリセット
+    for (const key in keys) {
+        keys[key] = false;
+    }
+    touchControls.isLeftPressed = false;
+    touchControls.isRightPressed = false;
+    touchControls.touchStartX = null;
+    touchStartY = null;
+
+    // プレイヤーの位置を保持しつつ、他の状態をリセット
+    playerPosition.left = currentLeft;
+    playerPosition.bottom = currentBottom;
+    updatePositions(); // 保存された位置を画面に反映
+
+    console.log("ゲーム状態をリセットしましたが、敵は維持されています。");
+}
+
+
 
 // ページロード時にハイスコアを取得して表示
 fetchHighScores();
@@ -970,9 +1014,9 @@ function gameLoop() {
         const jumpOnEnemySound = document.getElementById('jumpOnEnemySound');
 
         if (checkXOverlap(playerRect, enemyRect) &&
-            playerRect.bottom >= enemyRect.top - Math.abs(velocityY * 1.5) && // プレイヤーの底面が敵の上面に近い (速度依存の範囲)
-            playerRect.bottom <= enemyRect.top + Math.abs(velocityY * 1.5) && // 許容範囲内 (速度依存の範囲)
-            velocityY > -10) {
+            playerRect.bottom >= enemyRect.top - Math.abs(velocityY * 2) && // プレイヤーの底面が敵の上面に近い (速度依存の範囲)
+            playerRect.bottom <= enemyRect.top + Math.abs(velocityY * 2) && // 許容範囲内 (速度依存の範囲)
+            velocityY > -15) {
             score += enemyObj.scoreValue;
             scoreDisplay.textContent = `Score: ${score}`;
             enemiesToRemove.push(enemyObj);
@@ -988,9 +1032,18 @@ function gameLoop() {
             //何もしない
         }
         else if (checkCollision(playerRect, enemyRect)) {
-            // 通常の敵との衝突
-            gameOver = true;
-            break;
+            if (!isInvincible) { // 無敵状態でない場合のみ処理
+                hitCount++; // ヒットカウンターを増やす
+        
+                if (hitCount >= 2) {
+                    gameOver = true; // 2回当たったらゲームオーバー
+                    break;
+                } else {
+                    alert(`ヒット ${hitCount}/2 回！注意してください！`); // ヒット回数を通知（任意）
+                    setInvincible(2000); // 2秒間の無敵状態を設定
+                    resetGameExceptPlayer(); // プレイヤー以外をリセットし、位置は維持
+                }
+            }
         }
     }
     if (gameOver) {

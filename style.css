@@ -343,3 +343,18 @@ body {
         transform: scale(1.2);
     }
 }
+
+#player.invincible {
+    background-image: url('supergoku.jpg'); /* 無敵状態を示す画像 */
+    animation: blink 0.5s infinite;        /* 点滅アニメーション */
+    opacity: 0.5;                          /* 半透明にする */
+}
+
+@keyframes blink {
+    0%, 100% {
+        opacity: 1; /* 通常の透明度 */
+    }
+    50% {
+        opacity: 0.5; /* 半透明になる */
+    }
+}
