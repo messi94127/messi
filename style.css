@@ -1,9 +1,10 @@
 body {
+	font-family: 'Roboto', sans-serif;
+    line-height: 1.6;
     margin: 0;
     overflow: hidden;
     background-color: skyblue; /* ”wŒiF‚ğİ’è */
 }
-
 #game {
     position: relative;
     width: 100vw;
@@ -13,12 +14,19 @@ body {
 
 #background {
     position: absolute;
-    width: 200vw; /* ”wŒi‚ğ’·‚­ */
+    width: 200vw; /* ”wŒi‚ğ‰¡‚ÉŠg’£ */
     height: 100vh;
     background-image: url('namekku.jpg');
     background-size: cover;
-    background-position: 70% 30%;
-    background-repeat: repeat-x;
+    background-repeat: repeat-y; /* ‰¡•ûŒü‚Éƒ‹[ƒv */}
+
+@keyframes scrollBackground {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-100%);
+    }
 }
 
 #player {
@@ -44,6 +52,7 @@ body {
     #background-color: green;
     bottom: 100px;
 }
+
 #enemy-container {
     position: absolute;
     width: 100%;
@@ -357,4 +366,29 @@ body {
     50% {
         opacity: 0.5; /* ”¼“§–¾‚É‚È‚é */
     }
+}
+
+button {
+    font-size: 16px;
+    padding: 2px 10px;
+    background: linear-gradient(120deg, #ff7e5f, #feb47b); /* ƒOƒ‰ƒf[ƒVƒ‡ƒ“ */
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+button:hover {
+    transform: translateY(-2px); /* ƒzƒo[‚É­‚µ•‚‚©‚¹‚é */
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+button:active {
+    transform: scale(0.95); /* ‰Ÿ‚µ‚½‚Æ‚«‚Ék‚Ş */
+}
+
+@keyframes highlight {
+    0% { color: yellow; }
+    100% { color: #333; }
 }
