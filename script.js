@@ -1019,6 +1019,8 @@ function gameLoop() {
             scoreDisplay.textContent = `Score: ${score}`;
             enemiesToRemove.push(enemyObj);
 
+            jumpCount = 1; // ジャンプ回数をリセット
+
             // 効果音を再生
             jumpOnEnemySound.currentTime = 0; // 再生位置をリセット
             jumpOnEnemySound.play();
