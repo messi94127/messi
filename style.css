@@ -76,7 +76,7 @@ body {
     background-image: url('DB.jpg');
     background-size: cover;
     background-position: center;
-    bottom: 0;
+    bottom: 0px;
 }
 
 #score {
