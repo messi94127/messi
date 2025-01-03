@@ -747,15 +747,15 @@ function createEnemies() {
     for (let i = 0; i < numEnemies; i++) {
         const x = 800 + i * enemySpacing;
         const enemyType = Math.random();
-        if (enemyType < 0.25) {
+        if (enemyType < 0.3) {
             enemies.push(new Enemy(x, 100));
         } else if (enemyType < 0.5) {
             enemies.push(new FastEnemy(x, 100));
-        } else if (enemyType < 0.75) {
+        } else if (enemyType < 0.67) {
             enemies.push(new JumpingEnemy(x, 100));
-        } else if (enemyType < 0.85) {
+        } else if (enemyType < 0.82) {
             enemies.push(new RandomMovingEnemy(x, Math.random() * 400));
-        } else if (enemyType < 0.95) { // 確率を調整して追加
+        } else if (enemyType < 0.92) { // 確率を調整して追加
             enemies.push(new JumpBoostItem(x, Math.random() * 400)); // ジャンプブーストアイテム
         } else {
             enemies.push(new InvincibleItem(x, 100));
