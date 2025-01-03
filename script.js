@@ -710,7 +710,7 @@ class BossEnemy extends GameObject {
         enemyContainer.appendChild(element);
         super(x, y, 100, 100, element);
         this.speed = 5; // 通常の敵より遅い
-        this.health = 3; // 倒すのに複数回のヒットが必要
+        this.health = 5; // 倒すのに複数回のヒットが必要
         this.scoreValue = 2000; // ボスを倒した際のスコア
     }
 
@@ -1050,7 +1050,6 @@ function gameLoop() {
             velocityY = -20;
             enemiesDefeated++;
             if (enemiesDefeated % 15 === 0) {
-                enemiesDefeated = 0;
                 spawnBoss();
             }
             if (isInvincible) {
