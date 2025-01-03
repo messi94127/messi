@@ -940,7 +940,11 @@ function gameLoop() {
         // ゲームが開始されていない間は、次のフレームを待機
         // requestAnimationFrame(gameLoop);
         return;
-    }
+    } // 敵がいない場合に再生成
+    if (enemies.length === 0) {
+        console.log("再生成処理を実行中...");
+        createEnemies();
+    ｝
     if (isJumping) {
         velocityY += gravity;
         playerPosition.bottom -= velocityY;
