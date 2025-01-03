@@ -534,6 +534,7 @@ class ClearEnemiesItem extends GameObject {
         element.style.bottom = `${y}px`;
         enemyContainer.appendChild(element);
         super(x, y, 30, 30, element); // サイズを小さめに設定
+        this.scoreValue = 500; // この敵を倒したときに加算するスコア
     }
 
     move() {
