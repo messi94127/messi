@@ -907,7 +907,7 @@ function resetGameExceptPlayer() {
 
 
 // ページロード時にハイスコアを取得して表示
-fetchHighScores();
+//fetchHighScores();
 
 function gameLoop() {
     console.log('Game loop running'); // デバッグ用ログ
