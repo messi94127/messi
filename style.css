@@ -4,7 +4,7 @@ html,body {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background-color: skyblue; /* ”wŒiF‚ğİ’è */
+    background-color: skyblue; /* èƒŒæ™¯è‰²ã‚’è¨­å®š */
 }
 #game {
     position: relative;
@@ -15,11 +15,11 @@ html,body {
 
 #background {
     position: absolute;
-    width: 200vw; /* ”wŒi‚ğ‰¡‚ÉŠg’£ */
+    width: 200vw; /* èƒŒæ™¯ã‚’æ¨ªã«æ‹¡å¼µ */
     height: 100vh;
     background-image: url('picture/namekku.jpg');
     background-size: cover;
-    background-repeat: repeat-y; /* ‰¡•ûŒü‚Éƒ‹[ƒv */}
+    background-repeat: repeat-y; /* æ¨ªæ–¹å‘ã«ãƒ«ãƒ¼ãƒ— */}
 
 @keyframes scrollBackground {
     from {
@@ -37,7 +37,7 @@ html,body {
     background-image: url('picture/goku2.jpg');
     background-size: cover;
     background-position: center bottom;
-    border-radius: 50%; /* ‰~Œ`‚É‚·‚é */
+    border-radius: 50%; /* å††å½¢ã«ã™ã‚‹ */
     bottom: 100px;
     left: 50px;
 }
@@ -49,7 +49,7 @@ html,body {
     background-image: url('picture/saibaiman.jpg');
     background-size: cover;
     background-position: center bottom;
-    border-radius: 50%; /* ‰~Œ`‚É‚·‚é */
+    border-radius: 50%; /* å††å½¢ã«ã™ã‚‹ */
     #background-color: green;
     bottom: 100px;
 }
@@ -66,8 +66,8 @@ html,body {
     height: 50px;
     background-color: yellow;
     bottom: 100px;
-    /* ƒS[ƒ‹‚ÌˆÊ’u‚ğ’²®Bviewport width‚ÉˆË‘¶‚µ‚È‚¢ŒÅ’è’l‚É */
-    left: 2800px; /* —á‚¦‚ÎAƒQ[ƒ€‰æ–Ê‚Ì‚©‚È‚è‰E’[ */
+    /* ã‚´ãƒ¼ãƒ«ã®ä½ç½®ã‚’èª¿æ•´ã€‚viewport widthã«ä¾å­˜ã—ãªã„å›ºå®šå€¤ã« */
+    left: 2800px; /* ä¾‹ãˆã°ã€ã‚²ãƒ¼ãƒ ç”»é¢ã®ã‹ãªã‚Šå³ç«¯ */
 }
 
 #ground {
@@ -107,7 +107,7 @@ html,body {
     background-image: url('picture/bata.jpg');
     background-size: cover;
     background-position: center bottom;
-    border-radius: 50%; /* ‰~Œ`‚É‚·‚é */
+    border-radius: 50%; /* å††å½¢ã«ã™ã‚‹ */
     width: 40px;
     height: 40px;
 }
@@ -117,7 +117,7 @@ html,body {
     background-image: url('picture/freezar.jpg');
     background-size: cover;
     background-position: center bottom;
-    border-radius: 50%; /* ‰~Œ`‚É‚·‚é */
+    border-radius: 50%; /* å††å½¢ã«ã™ã‚‹ */
     position: absolute;
 }
 .invincible-item {
@@ -126,21 +126,21 @@ html,body {
     background-image: url('picture/krillin.jpg');
     background-size: cover;
     background-position: center bottom;
-    border-radius: 50%; /* ‰~Œ`‚É‚·‚é */
+    border-radius: 50%; /* å††å½¢ã«ã™ã‚‹ */
     position: absolute;
 }
 #player.invincible {
     background-image: url('picture/supergoku.jpg');
-    animation: blink 0.5s infinite; /* “_–ÅƒAƒjƒ[ƒVƒ‡ƒ“ */
-    opacity: 0.5; /* ”¼“§–¾‚É‚µ‚Ä–³“Gó‘Ô‚ğ¦‚· */
+    animation: blink 0.5s infinite; /* ç‚¹æ»…ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ */
+    opacity: 0.5; /* åŠé€æ˜ã«ã—ã¦ç„¡æ•µçŠ¶æ…‹ã‚’ç¤ºã™ */
 }
 
 @keyframes blink {
     0%, 100% {
-        opacity: 1; /* ’Êí‚Ì“§–¾“x */
+        opacity: 1; /* é€šå¸¸ã®é€æ˜åº¦ */
     }
     50% {
-        opacity: 0.5; /* ”¼“§–¾‚É‚È‚é */
+        opacity: 0.5; /* åŠé€æ˜ã«ãªã‚‹ */
     }
 }
 
@@ -169,11 +169,11 @@ html,body {
     z-index: 1000;
     font-size: 24px;
     text-align: center;
-    display: none; /* ‰Šúó‘Ô‚Å‚Í”ñ•\¦ */
+    display: none; /* åˆæœŸçŠ¶æ…‹ã§ã¯éè¡¨ç¤º */
 }
 
 .overlay.visible {
-    display: flex; /* •\¦‚ÉƒtƒŒƒbƒNƒXƒŒƒCƒAƒEƒg‚ğg—p */
+    display: flex; /* è¡¨ç¤ºæ™‚ã«ãƒ•ãƒ¬ãƒƒã‚¯ã‚¹ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã‚’ä½¿ç”¨ */
 }
 
 #startMessage {
@@ -286,7 +286,7 @@ html,body {
     }
 }
 
-/* ƒnƒCƒXƒRƒAƒZƒNƒVƒ‡ƒ“‘S‘Ì‚ÌƒXƒ^ƒCƒ‹ */
+/* ãƒã‚¤ã‚¹ã‚³ã‚¢ã‚»ã‚¯ã‚·ãƒ§ãƒ³å…¨ä½“ã®ã‚¹ã‚¿ã‚¤ãƒ« */
 #highScoresSection {
     text-align: center;
     margin: 20px auto;
@@ -298,21 +298,21 @@ html,body {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* ƒZƒNƒVƒ‡ƒ“ƒ^ƒCƒgƒ‹‚ÌƒXƒ^ƒCƒ‹ */
+/* ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚¿ã‚¤ãƒˆãƒ«ã®ã‚¹ã‚¿ã‚¤ãƒ« */
 #highScoresSection h2 {
     font-size: 24px;
     color: #333;
     margin-bottom: 15px;
 }
 
-/* ƒXƒRƒAƒŠƒXƒg‚ÌƒXƒ^ƒCƒ‹ */
+/* ã‚¹ã‚³ã‚¢ãƒªã‚¹ãƒˆã®ã‚¹ã‚¿ã‚¤ãƒ« */
 #highScoreList {
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
-/* ŠeƒXƒRƒA€–Ú‚ÌƒXƒ^ƒCƒ‹ */
+/* å„ã‚¹ã‚³ã‚¢é …ç›®ã®ã‚¹ã‚¿ã‚¤ãƒ« */
 #highScoreList li {
     font-size: 18px;
     margin: 8px 0;
@@ -323,7 +323,7 @@ html,body {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-/* ‡ˆÊ‚ÌF•ª‚¯ */
+/* é †ä½ã®è‰²åˆ†ã‘ */
 #highScoreList li:nth-child(1) {
     background-color: gold;
     font-weight: bold;
@@ -335,7 +335,7 @@ html,body {
     color: white;
 }
 #highScoreList li:nth-child(3) {
-    background-color: #cd7f32; /* ƒuƒƒ“ƒY */
+    background-color: #cd7f32; /* ãƒ–ãƒ­ãƒ³ã‚º */
     font-weight: bold;
     color: white;
 }
@@ -355,24 +355,24 @@ html,body {
 }
 
 #player.invincible {
-    background-image: url('picture/supergoku.jpg'); /* –³“Gó‘Ô‚ğ¦‚·‰æ‘œ */
-    animation: blink 0.5s infinite;        /* “_–ÅƒAƒjƒ[ƒVƒ‡ƒ“ */
-    opacity: 0.5;                          /* ”¼“§–¾‚É‚·‚é */
+    background-image: url('picture/supergoku.jpg'); /* ç„¡æ•µçŠ¶æ…‹ã‚’ç¤ºã™ç”»åƒ */
+    animation: blink 0.5s infinite;        /* ç‚¹æ»…ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ */
+    opacity: 0.5;                          /* åŠé€æ˜ã«ã™ã‚‹ */
 }
 
 @keyframes blink {
     0%, 100% {
-        opacity: 1; /* ’Êí‚Ì“§–¾“x */
+        opacity: 1; /* é€šå¸¸ã®é€æ˜åº¦ */
     }
     50% {
-        opacity: 0.5; /* ”¼“§–¾‚É‚È‚é */
+        opacity: 0.5; /* åŠé€æ˜ã«ãªã‚‹ */
     }
 }
 
 button {
     font-size: 16px;
     padding: 2px 10px;
-    background: linear-gradient(120deg, #ff7e5f, #feb47b); /* ƒOƒ‰ƒf[ƒVƒ‡ƒ“ */
+    background: linear-gradient(120deg, #ff7e5f, #feb47b); /* ã‚°ãƒ©ãƒ‡ãƒ¼ã‚·ãƒ§ãƒ³ */
     color: white;
     border: none;
     border-radius: 10px;
@@ -381,12 +381,12 @@ button {
 }
 
 button:hover {
-    transform: translateY(-2px); /* ƒzƒo[‚É­‚µ•‚‚©‚¹‚é */
+    transform: translateY(-2px); /* ãƒ›ãƒãƒ¼æ™‚ã«å°‘ã—æµ®ã‹ã›ã‚‹ */
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 }
 
 button:active {
-    transform: scale(0.95); /* ‰Ÿ‚µ‚½‚Æ‚«‚Ék‚Ş */
+    transform: scale(0.95); /* æŠ¼ã—ãŸã¨ãã«ç¸®ã‚€ */
 }
 
 @keyframes highlight {
@@ -414,4 +414,11 @@ button:active {
         transform: scale(1.2);
         box-shadow: 0 0 30px orange;
     }
+}
+.clear-enemies-item {
+    width: 30px;
+    height: 30px;
+    background-color: red; /* å¥½ããªè‰²ã«å¤‰æ›´ */
+    border-radius: 50%; /* å††å½¢ã«ã™ã‚‹ */
+    border: 2px solid white;
 }
