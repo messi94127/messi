@@ -418,7 +418,9 @@ button:active {
 .clear-enemies-item {
     width: 30px;
     height: 30px;
-    background-image: url('picture/IMG_3415.JPG');
-    border-radius: 50%; /* 円形にする */
+    background-image: url('picture/IMG_3415.jpg');
+    border-radius: 50%;
     border: 2px solid white;
+    background-size: cover;
+    background-position: center bottom;
 }
