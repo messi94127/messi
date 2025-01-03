@@ -747,7 +747,7 @@ function createEnemies() {
     for (let i = 0; i < numEnemies; i++) {
         const x = 800 + i * enemySpacing;
         const enemyType = Math.random();
-        if (enemyType < 0.3) {
+        if (enemyType < 0.4) {
             enemies.push(new Enemy(x, 100));
         } else if (enemyType < 0.5) {
             enemies.push(new FastEnemy(x, 100));
