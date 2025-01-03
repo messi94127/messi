@@ -412,6 +412,8 @@ function resetGame() {
     isJumping = false;
     velocityY = 0;
 
+    enemiesDefeated = 0;
+
     startTime = Date.now();
     score = 0;
     scoreDisplay.textContent = `Score: ${score}`;
