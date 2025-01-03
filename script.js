@@ -967,18 +967,18 @@ function gameLoop() {
         jumpCount = 0; // ジャンプ回数をリセット
     }
 
-    // 敵の移動と火を吐く処理 (Fireオブジェクトの移動処理を追加)
-    for (let i = enemies.length - 1; i >= 0; i--) {
-        const enemyObj = enemies[i];
-        if (enemyObj instanceof FireBreathingEnemy) {
-            enemyObj.fireBreath();
-        } else if (enemyObj instanceof Fire) { // Fireオブジェクトの移動
-            if (enemyObj.move()) { //画面外に出たら削除
-                enemies.splice(i, 1);
-                enemyObj.element.remove();
-            }
-        }
-    }
+    // // 敵の移動と火を吐く処理 (Fireオブジェクトの移動処理を追加)
+    // for (let i = enemies.length - 1; i >= 0; i--) {
+    //     const enemyObj = enemies[i];
+    //     if (enemyObj instanceof FireBreathingEnemy) {
+    //         enemyObj.fireBreath();
+    //     } else if (enemyObj instanceof Fire) { // Fireオブジェクトの移動
+    //         if (enemyObj.move()) { //画面外に出たら削除
+    //             enemies.splice(i, 1);
+    //             enemyObj.element.remove();
+    //         }
+    //     }
+    // }
     updatePositions();
 
     if (playerPosition.left < 0) playerPosition.left = 0;
