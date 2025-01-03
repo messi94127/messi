@@ -1,0 +1,395 @@
+html,body {
+	font-family: 'Roboto', sans-serif;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: skyblue; /* 背景色を設定 */
+}
+#game {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+#background {
+    position: absolute;
+    width: 200vw; /* 背景を横に拡張 */
+    height: 100vh;
+    background-image: url('picture/namekku.jpg');
+    background-size: cover;
+    background-repeat: repeat-y; /* 横方向にループ */}
+
+@keyframes scrollBackground {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-100%);
+    }
+}
+
+#player {
+    position: absolute;
+    width: 50px;
+    height: 80px;
+    background-image: url('picture/goku2.jpg');
+    background-size: cover;
+    background-position: center bottom;
+    border-radius: 50%; /* 円形にする */
+    bottom: 100px;
+    left: 50px;
+}
+
+.enemy {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-image: url('picture/saibaiman.jpg');
+    background-size: cover;
+    background-position: center bottom;
+    border-radius: 50%; /* 円形にする */
+    #background-color: green;
+    bottom: 100px;
+}
+
+#enemy-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+#goal {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-color: yellow;
+    bottom: 100px;
+    /* ゴールの位置を調整。viewport widthに依存しない固定値に */
+    left: 2800px; /* 例えば、ゲーム画面のかなり右端 */
+}
+
+#ground {
+    position: absolute;
+    width: 100%;
+    height: 100px;
+    background-image: url('picture/DB.jpg');
+    background-size: cover;
+    background-position: center;
+    bottom: 0px;
+}
+
+#score {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 20px;
+    color: white;
+}
+
+#highScore {
+    position: absolute;
+    top: 40px;
+    left: 10px;
+    font-size: 20px;
+    color: white;
+}
+
+.fire {
+    width: 20px;
+    height: 20px;
+    background-color: orange;
+    border-radius: 50%;
+    position: absolute;
+}
+.fast-enemy {
+    background-image: url('picture/bata.jpg');
+    background-size: cover;
+    background-position: center bottom;
+    border-radius: 50%; /* 円形にする */
+    width: 40px;
+    height: 40px;
+}
+.jumping-enemy {
+    width: 50px;
+    height: 50px;
+    background-image: url('picture/freezar.jpg');
+    background-size: cover;
+    background-position: center bottom;
+    border-radius: 50%; /* 円形にする */
+    position: absolute;
+}
+.invincible-item {
+    width: 30px;
+    height: 30px;
+    background-image: url('picture/krillin.jpg');
+    background-size: cover;
+    background-position: center bottom;
+    border-radius: 50%; /* 円形にする */
+    position: absolute;
+}
+#player.invincible {
+    background-image: url('picture/supergoku.jpg');
+    animation: blink 0.5s infinite; /* 点滅アニメーション */
+    opacity: 0.5; /* 半透明にして無敵状態を示す */
+}
+
+@keyframes blink {
+    0%, 100% {
+        opacity: 1; /* 通常の透明度 */
+    }
+    50% {
+        opacity: 0.5; /* 半透明になる */
+    }
+}
+
+.random-moving-enemy {
+    background-image: url('picture/cell.jpg');
+    background-size: cover;
+    background-position: center bottom;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    border: 2px solid white;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    font-size: 24px;
+    text-align: center;
+    display: none; /* 初期状態では非表示 */
+}
+
+.overlay.visible {
+    display: flex; /* 表示時にフレックスレイアウトを使用 */
+}
+
+#startMessage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    z-index: 1000;
+    font-size: 18px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.fadeOut {
+    animation: fadeOut 1s ease-in-out;
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+.highlight {
+    color: gold;
+    font-size: 2rem;
+    animation: highlightGlow 1.5s infinite alternate;
+}
+
+@keyframes highlightGlow {
+    from {
+        text-shadow: 0 0 10px gold, 0 0 20px gold;
+    }
+    to {
+        text-shadow: 0 0 20px yellow, 0 0 30px yellow;
+    }
+}
+
+#difficulty-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.difficulty-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.difficulty-button:hover {
+    background-color: #0056b3;
+}
+
+.difficulty-button:active {
+    background-color: #003f7f;
+}
+
+.jump-boost-item {
+    width: 30px;
+    height: 30px;
+    background-image: url('picture/gohan.jpg');
+    background-size: cover;
+    background-position: center bottom;
+    border: 2px solid gold;
+    border-radius: 50%;
+    animation: glow 1s infinite alternate;
+}
+
+@keyframes glow {
+    from {
+        box-shadow: 0 0 10px yellow;
+    }
+    to {
+        box-shadow: 0 0 20px gold;
+    }
+}
+
+.player.boosted {
+    animation: boostEffect 0.5s infinite alternate;
+}
+
+@keyframes boostEffect {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(1.2);
+    }
+}
+
+/* ハイスコアセクション全体のスタイル */
+#highScoresSection {
+    text-align: center;
+    margin: 20px auto;
+    max-width: 400px;
+    padding: 20px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* セクションタイトルのスタイル */
+#highScoresSection h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+/* スコアリストのスタイル */
+#highScoreList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* 各スコア項目のスタイル */
+#highScoreList li {
+    font-size: 18px;
+    margin: 8px 0;
+    padding: 5px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* 順位の色分け */
+#highScoreList li:nth-child(1) {
+    background-color: gold;
+    font-weight: bold;
+    color: white;
+}
+#highScoreList li:nth-child(2) {
+    background-color: silver;
+    font-weight: bold;
+    color: white;
+}
+#highScoreList li:nth-child(3) {
+    background-color: #cd7f32; /* ブロンズ */
+    font-weight: bold;
+    color: white;
+}
+
+#player.double-jumping {
+    background-image: url('picture/goku2.jpg');
+    animation: doubleJumpEffect 0.5s infinite alternate;
+}
+
+@keyframes doubleJumpEffect {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(1.2);
+    }
+}
+
+#player.invincible {
+    background-image: url('picture/supergoku.jpg'); /* 無敵状態を示す画像 */
+    animation: blink 0.5s infinite;        /* 点滅アニメーション */
+    opacity: 0.5;                          /* 半透明にする */
+}
+
+@keyframes blink {
+    0%, 100% {
+        opacity: 1; /* 通常の透明度 */
+    }
+    50% {
+        opacity: 0.5; /* 半透明になる */
+    }
+}
+
+button {
+    font-size: 16px;
+    padding: 2px 10px;
+    background: linear-gradient(120deg, #ff7e5f, #feb47b); /* グラデーション */
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+button:hover {
+    transform: translateY(-2px); /* ホバー時に少し浮かせる */
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+button:active {
+    transform: scale(0.95); /* 押したときに縮む */
+}
+
+@keyframes highlight {
+    0% { color: yellow; }
+    100% { color: #333; }
+}
