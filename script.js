@@ -525,6 +525,29 @@ class FireBreathingEnemy extends GameObject {
     }
 }
 
+class ClearEnemiesItem extends GameObject {
+    constructor(x, y) {
+        const element = document.createElement('div');
+        element.classList.add('clear-enemies-item');
+        element.style.position = 'absolute';
+        element.style.left = `${x}px`;
+        element.style.bottom = `${y}px`;
+        enemyContainer.appendChild(element);
+        super(x, y, 30, 30, element); // サイズを小さめに設定
+    }
+
+    move() {
+        this.x -= playerSpeed * backgroundSpeed; // 左に移動
+        this.element.style.left = `${this.x}px`;
+
+        // 画面外に出たら削除
+        if (this.x < -30) {
+            this.element.remove();
+            return true; // 削除が必要
+        }
+        return false;
+    }
+}
 class FastEnemy extends GameObject {
     constructor(x, y) {
         const element = document.createElement('div');
@@ -757,6 +780,8 @@ function createEnemies() {
             enemies.push(new RandomMovingEnemy(x, Math.random() * 400));
         } else if (enemyType < 0.92) { // 確率を調整して追加
             enemies.push(new JumpBoostItem(x, Math.random() * 400)); // ジャンプブーストアイテム
+        } else if (enemyType < 0.97) { // 確率を調整して追加
+            enemies.push(new ClearEnemiesItem(x, Math.random() * 400)); // 画面内の敵を消すアイテム
         } else {
             enemies.push(new InvincibleItem(x, 100));
         }
@@ -992,6 +1017,21 @@ function gameLoop() {
     const enemiesToRemove = [];
     let gameOver = false;
 
+if (enemyObj instanceof ClearEnemiesItem) {
+    if (checkCollision(playerRect, enemyRect)) {
+        // 敵を全て削除
+        enemies.forEach(enemy => {
+            if (enemy.element) {
+                enemy.element.remove();
+            }
+        });
+        enemies = []; // 敵リストを空にする
+        score += 1000; // スコアを加算
+        scoreDisplay.textContent = `Score: ${score}`;
+        enemiesToRemove.push(enemyObj); // アイテム自体を削除対象に追加
+        break;
+    }
+}
     // 敵と火の玉の衝突判定
     for (const enemyObj of enemies) {
         if (!enemyObj) continue;
