@@ -940,11 +940,12 @@ function gameLoop() {
         // ゲームが開始されていない間は、次のフレームを待機
         // requestAnimationFrame(gameLoop);
         return;
-    } // 敵がいない場合に再生成
+    }
+    // 敵がいない場合に再生成
     if (enemies.length === 0) {
         console.log("再生成処理を実行中...");
         createEnemies();
-    ｝
+    }
     if (isJumping) {
         velocityY += gravity;
         playerPosition.bottom -= velocityY;
@@ -1021,21 +1022,6 @@ function gameLoop() {
     const enemiesToRemove = [];
     let gameOver = false;
 
-if (enemyObj instanceof ClearEnemiesItem) {
-    if (checkCollision(playerRect, enemyRect)) {
-        // 敵を全て削除
-        enemies.forEach(enemy => {
-            if (enemy.element) {
-                enemy.element.remove();
-            }
-        });
-        enemies = []; // 敵リストを空にする
-        score += 1000; // スコアを加算
-        scoreDisplay.textContent = `Score: ${score}`;
-        enemiesToRemove.push(enemyObj); // アイテム自体を削除対象に追加
-        break;
-    }
-}
     // 敵と火の玉の衝突判定
     for (const enemyObj of enemies) {
         if (!enemyObj) continue;
@@ -1048,6 +1034,22 @@ if (enemyObj instanceof ClearEnemiesItem) {
             if (checkCollision(playerRect, enemyRect)) {
                 applyJumpBoost(); // ジャンプ力を増加
                 enemiesToRemove.push(enemyObj); // アイテムを削除対象に追加
+                break;
+            }
+        }
+
+        if (enemyObj instanceof ClearEnemiesItem) {
+            if (checkCollision(playerRect, enemyRect)) {
+                // 敵を全て削除
+                enemies.forEach(enemy => {
+                    if (enemy.element) {
+                        enemy.element.remove();
+                    }
+                });
+                enemies = []; // 敵リストを空にする
+                score += 1000; // スコアを加算
+                scoreDisplay.textContent = `Score: ${score}`;
+                enemiesToRemove.push(enemyObj); // アイテム自体を削除対象に追加
                 break;
             }
         }
