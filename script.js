@@ -1,6 +1,6 @@
-import Enemy from EnemyCollect/Enemy.js
-import GameObject from EnemyCollect/GameObject.js
-import FastEnemy from EnemyCollect/FastEnemy.js
+import Enemy from './EnemyCollect/Enemy.js'
+import GameObject from './EnemyCollect/GameObject.js'
+import FastEnemy from './EnemyCollect/FastEnemy.js'
 
 const player = document.getElementById('player');
 const game = document.getElementById('game');
