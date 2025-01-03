@@ -15,6 +15,7 @@ let velocityY = 0;
 let playerPosition = { left: 50, bottom: 100 };
 const playerSpeed = 5;
 
+let enemiesDefeated = 0; // 倒した敵の数
 let enemies = [];
 const numEnemies = 1000;
 
@@ -699,6 +700,47 @@ class JumpBoostItem extends GameObject {
     }
 }
 
+class BossEnemy extends GameObject {
+    constructor(x, y) {
+        const element = document.createElement('div');
+        element.classList.add('enemy', 'boss-enemy');
+        element.style.position = 'absolute';
+        element.style.left = `${x}px`;
+        element.style.bottom = `${y}px`;
+        enemyContainer.appendChild(element);
+        super(x, y, 100, 100, element);
+        this.speed = 5; // 通常の敵より遅い
+        this.health = 5; // 倒すのに複数回のヒットが必要
+        this.scoreValue = 2000; // ボスを倒した際のスコア
+    }
+
+    move() {
+        this.x -= this.speed;
+        this.element.style.left = `${this.x}px`;
+
+        if (this.x < -100) {
+            this.x = game.offsetWidth + Math.random() * 500;
+        }
+    }
+
+    takeDamage() {
+        this.health--;
+        if (this.health <= 0) {
+            this.element.remove(); // ボスを削除
+            return true; // ボスが倒された
+        }
+        return false; // まだ生きている
+    }
+}
+
+// ボスを生成する関数
+function spawnBoss() {
+    const bossX = game.offsetWidth - 100;
+    const bossY = 150; // プレイヤーがジャンプで届く高さ
+    const boss = new BossEnemy(bossX, bossY);
+    enemies.push(boss);
+}
+
 function createEnemies() {
     for (let i = 0; i < numEnemies; i++) {
         const x = 800 + i * enemySpacing;
@@ -878,7 +920,7 @@ function gameLoop() {
         if (playerPosition.bottom <= 100) {
             playerPosition.bottom = 100;
             isJumping = false;
-            
+
         }
         const airControl = 0.1;
         if (keys.ArrowRight || touchControls.isRightPressed) {
@@ -896,8 +938,8 @@ function gameLoop() {
         }
     }
 
-     // 2段ジャンプのエフェクトを適用
-     if (jumpCount === 2) {
+    // 2段ジャンプのエフェクトを適用
+    if (jumpCount === 2) {
         player.classList.add('double-jumping'); // 見た目を変更
     } else {
         player.classList.remove('double-jumping'); // 見た目を元に戻す
@@ -972,7 +1014,6 @@ function gameLoop() {
             if (checkCollision(playerRect, enemyRect)) {
                 setInvincible(); // 無敵状態を有効化
                 enemiesToRemove.push(enemyObj); // アイテムを削除対象に追加
-
                 // 再生中フラグをチェック
                 if (!kuririSound.paused && !kuririSound.ended) {
                     console.warn('kuririSound is already playing, skipping new play() request.');
@@ -982,49 +1023,35 @@ function gameLoop() {
                         console.error('Playback error:', error.message); // エラーの詳細をログ
                     });
                 }
-
                 break; // 複数同時取得を防ぐ
             }
         }
-        // if (!isInvincible) {
-        //     // if (checkCollision(playerRect, enemyRect)) {
-        //     //     gameOver = true; // 無敵状態でない場合にゲームオーバー
-        //     //     break;
-        //     // }
-        // } else {
-        //     console.log('Invincible: No collision effect'); // デバッグ用ログ
-        //     break;
-        // }
-        // if (!isInvincible && checkCollision(playerRect, enemyRect)) {
-        //     gameOver = true; // 無敵状態でない場合のみゲームオーバーになる
-        //     break;
-        // }
-
-        // if (enemyObj instanceof Fire) {
-        //     const fireRect = enemyObj.element.getBoundingClientRect();
-        //     if (checkCollision(playerRect, fireRect)) {
-        //         gameOver = true;
-        //         enemyObj.element.remove(); // DOMから削除
-        //     break;
-        //     }
-        // }
-        // 効果音オーディオ要素を取得
         const jumpOnEnemySound = document.getElementById('jumpOnEnemySound');
 
         if (checkXOverlap(playerRect, enemyRect) &&
             playerRect.bottom >= enemyRect.top - Math.abs(velocityY * 2) && // プレイヤーの底面が敵の上面に近い (速度依存の範囲)
             playerRect.bottom <= enemyRect.top + Math.abs(velocityY * 2) && // 許容範囲内 (速度依存の範囲)
             velocityY > -15) {
-            score += enemyObj.scoreValue;
-            scoreDisplay.textContent = `Score: ${score}`;
-            enemiesToRemove.push(enemyObj);
-
+            if (enemyObj instanceof BossEnemy) {
+                if (enemyObj.takeDamage()) {
+                    score += enemyObj.scoreValue;
+                    scoreDisplay.textContent = `Score: ${score}`;
+                    enemiesToRemove.push(enemyObj);
+                }
+            } else {
+                score += enemyObj.scoreValue;
+                scoreDisplay.textContent = `Score: ${score}`;
+                enemiesToRemove.push(enemyObj);
+            }
             jumpCount = 1; // ジャンプ回数をリセット
-
             // 効果音を再生
             jumpOnEnemySound.currentTime = 0; // 再生位置をリセット
             jumpOnEnemySound.play();
             velocityY = -20;
+            enemiesDefeated++;
+            if (enemiesDefeated % 15 === 0) {
+                spawnBoss();
+            }
             if (isInvincible) {
                 break;
             }
@@ -1034,7 +1061,7 @@ function gameLoop() {
         else if (checkCollision(playerRect, enemyRect)) {
             if (!isInvincible) { // 無敵状態でない場合のみ処理
                 hitCount++; // ヒットカウンターを増やす
-        
+
                 if (hitCount >= 2) {
                     gameOver = true; // 2回当たったらゲームオーバー
                     break;

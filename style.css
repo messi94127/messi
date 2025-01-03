@@ -393,3 +393,25 @@ button:active {
     0% { color: yellow; }
     100% { color: #333; }
 }
+
+.boss-enemy {
+    width: 100px;
+    height: 100px;
+    background-image: url('picture/majin.jpg');
+    background-size: cover;
+    background-position: center bottom;
+    border: 3px solid red;
+    border-radius: 50%;
+    animation: bossEffect 1s infinite alternate;
+}
+
+@keyframes bossEffect {
+    from {
+        transform: scale(1);
+        box-shadow: 0 0 20px red;
+    }
+    to {
+        transform: scale(1.2);
+        box-shadow: 0 0 30px orange;
+    }
+}
