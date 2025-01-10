@@ -533,13 +533,25 @@ class ClearEnemiesItem extends GameObject {
         element.style.left = `${x}px`;
         element.style.bottom = `${y}px`;
         enemyContainer.appendChild(element);
-        super(x, y, 30, 30, element); // サイズを小さめに設定
+
+        super(x, y, 30, 30, element);
+
+        this.speedY = (Math.random() - 0.5) * 2; // 上下方向のランダムな速度 (-1 ～ 1)
+        this.boundY = { min: 50, max: 300 }; // 縦方向の移動範囲
         this.scoreValue = 500; // この敵を倒したときに加算するスコア
     }
-
+        
     move() {
-        this.x -= playerSpeed * backgroundSpeed; // 左に移動
+        // 左方向への移動
+        this.x -= playerSpeed * backgroundSpeed;
         this.element.style.left = `${this.x}px`;
+
+        // 縦方向のランダムな動き
+        this.y += this.speedY;
+        if (this.y < this.boundY.min || this.y > this.boundY.max) {
+            this.speedY = -this.speedY; // 端に達したら方向を反転
+        }
+        this.element.style.bottom = `${this.y}px`;
 
         // 画面外に出たら削除
         if (this.x < -30) {
